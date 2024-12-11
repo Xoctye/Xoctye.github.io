@@ -24,12 +24,17 @@
     <a href="/index.html"><i class="fa fa-reply replay-btn" aria-hidden="true"></i></a>
     <div class="post-title">
         <p>
-            fuzz
+            【零碎技术】FUZZ技术
         </p>
         <hr>
     </div>
     <div class="post-content">
-        
+        <p>AFL工作流程：<br>从源码编译程序时进行插桩，以覆盖代码覆盖率；<br>选择一些输入文件，作为初始化测试集加入输入队列；<br>将队列中的文件按一定的策略进行“突变”；<br>如果经过变异文件更新了覆盖范围，则将其保留添加到队列中；<br>上述过程会一直循环进行，期间触发了crash的文件会被记录下来。<br><img src="/images/fuzz0001.jpg"><br><a target="_blank" rel="noopener" href="https://github.com/u1f383/fuzzing-learning-in-30-days?tab=readme-ov-file">fuzzing-learning-in-30-days</a><br><img src="/images/fuzz0002.png"><br>1、种子选择是否能跳出真正有意义的种子；<br>2、变异的随机是否有效率；<br>3、覆盖实现的方式是否会造成大量的开销。<br><img src="/images/fuzz0003.png"><br>AFL有两种fuzz途径：<br>1、开源软件：AFL软件进行编译的同时进行插桩；<br>2、闭源软件：配合QEMU直接对闭源软件的二进制代码进行fuzz。<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41988448/article/details/115176224">Fuzz学习笔记（一）—— WinAFL环境搭建与基本使用</a></p>
+<h3 id="linux下安装AFL"><a href="#linux下安装AFL" class="headerlink" title="linux下安装AFL++"></a>linux下安装AFL++</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//https://lidaxian121.github.io/posts/fuzz/</span></span><br><span class="line">git clone https:<span class="comment">//github.com/AFLplusplus/AFLplusplus.git</span></span><br><span class="line">make</span><br><span class="line">make install</span><br><span class="line"><span class="keyword">export</span> AFL_USE_ASAN=<span class="number">1</span></span><br><span class="line">afl-gcc -fsanitize=address -o test test.c</span><br><span class="line">objdump -M intel -d test | grep afl</span><br><span class="line">afl-fuzz -i seed-dir -o out-dir -m none ./test</span><br></pre></td></tr></table></figure>
+<p>常用的静态安全检测技术：词法分析（Checkmarx、ITS4）、数据流分析(Coverity、Klockword)、污点分析(Pixy)、符号执行(SAGE、SMART、KLEE)、模型检验、定理证明(Saturn)</p>
+<p><a target="_blank" rel="noopener" href="https://bbs.kanxue.com/thread-284327.htm">fuzzing原理探究(上)：afl，afl++背后的变异算法</a></p>
+<p>静态插桩（适用于有源码的情况）：LLVM MODE、汇编层面插桩</p>
+
     </div>
 
     
