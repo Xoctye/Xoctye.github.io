@@ -19,8 +19,8 @@
            "@id": "https:\/\/xoctye.github.io\/"
       },
       "articleSection" : "posts",
-      "name" : "【零碎技术】FUZZ技术",
-      "headline" : "【零碎技术】FUZZ技术",
+      "name" : "FUZZ技术",
+      "headline" : "FUZZ技术",
       "description" : "AFL工作流程： 从源码编译程序时进行插桩，以覆盖代码覆盖率； 选择一些输入文件，作为初始化测试集加入输入队列； 将队列中的文件按一定的策略进行“突变”； 如果经过变异文件更新了覆盖范围，则将其保留添加到队列中； 上述过程会一直循环进行，期间触发了crash的文件会被记录下来。 fuzzing-learning-in-30-days 1、种子选择是否能跳出真正有意义的种子； 2、变异的随机是否有效率； 3、覆盖实现的方式是否会造成大量的开销。 AFL有两种fuzz途径： 1、开源软件：AFL软件进行编译的同时进行插桩； 2、闭源软件：配合QEMU直接对闭源软件的二进制代码进行fuzz。 Fuzz学习笔记（一）—— WinAFL环境搭建与基本使用\nlinux下安装AFL\u002b\u002b \/\/https:\/\/lidaxian121.github.io\/posts\/fuzz\/ git clone https:\/\/github.com\/AFLplusplus\/AFLplusplus.git make make install export AFL_USE_ASAN=1 afl-gcc -fsanitize=address -o test test.c objdump -M intel -d test | grep afl afl-fuzz -i seed-dir -o out-dir -m none .\/test 常用的静态安全检测技术：词法分析（Checkmarx、ITS4）、数据流分析(Coverity、Klockword)、污点分析(Pixy)、符号执行(SAGE、SMART、KLEE)、模型检验、定理证明(Saturn)\nfuzzing原理探究(上)：afl，afl\u002b\u002b背后的变异算法\n静态插桩（适用于有源码的情况）：LLVM MODE、汇编层面插桩\n",
       "inLanguage" : "en-US",
       "author" : "",
@@ -35,8 +35,8 @@
       "keywords" : [  ]
   }
 </script>
-<title>【零碎技术】FUZZ技术</title>
-  <meta property="og:title" content="【零碎技术】FUZZ技术" />
+<title>FUZZ技术</title>
+  <meta property="og:title" content="FUZZ技术" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="AFL工作流程： 从源码编译程序时进行插桩，以覆盖代码覆盖率； 选择一些输入文件，作为初始化测试集加入输入队列； 将队列中的文件按一定的策略进行“突变”； 如果经过变异文件更新了覆盖范围，则将其保留添加到队列中； 上述过程会一直循环进行，期间触发了crash的文件会被记录下来。 fuzzing-learning-in-30-days 1、种子选择是否能跳出真正有意义的种子； 2、变异的随机是否有效率； 3、覆盖实现的方式是否会造成大量的开销。 AFL有两种fuzz途径： 1、开源软件：AFL软件进行编译的同时进行插桩； 2、闭源软件：配合QEMU直接对闭源软件的二进制代码进行fuzz。 Fuzz学习笔记（一）—— WinAFL环境搭建与基本使用
 linux下安装AFL&#43;&#43; //https://lidaxian121.github.io/posts/fuzz/ git clone https://github.com/AFLplusplus/AFLplusplus.git make make install export AFL_USE_ASAN=1 afl-gcc -fsanitize=address -o test test.c objdump -M intel -d test | grep afl afl-fuzz -i seed-dir -o out-dir -m none ./test 常用的静态安全检测技术：词法分析（Checkmarx、ITS4）、数据流分析(Coverity、Klockword)、污点分析(Pixy)、符号执行(SAGE、SMART、KLEE)、模型检验、定理证明(Saturn)
@@ -101,7 +101,7 @@ fuzzing原理探究(上)：afl，afl&#43;&#43;背后的变异算法
 
         </div>
         <header class="post-header">
-          <h1 class="post-title">【零碎技术】FUZZ技术</h1>
+          <h1 class="post-title">FUZZ技术</h1>
           
           <div class="row post-desc">
             <div class="col-xs-6">

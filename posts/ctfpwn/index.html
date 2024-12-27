@@ -19,8 +19,8 @@
            "@id": "https:\/\/xoctye.github.io\/"
       },
       "articleSection" : "posts",
-      "name" : "【零碎技术】CTF竞赛权威指南PWN",
-      "headline" : "【零碎技术】CTF竞赛权威指南PWN",
+      "name" : "CTF竞赛权威指南PWN",
+      "headline" : "CTF竞赛权威指南PWN",
       "description" : "书籍 第一章 CTF：Capture The Flag 竞赛模式：解题模式（RE逆向工程、Pwn漏洞挖掘与利用、Web渗透、Crypto密码学、Mobile移动安全、Misc杂项） 、攻防模式、混合模式 著名赛事：DEFCON CTF、Pwn2Own、CGC、XCTF、强网杯、HITCON CTF、TCTF 网络安全会议：RSA、BlackHat、ISC 学术会议：CCS、NDSS、Oakland S\u0026amp;P(A)、USENIX(A)\n第二章 编译器的结构可分为前端和后端，前端是机器无关的，其功能是把源程序分解成组成要素和相应的语法结构，通过这个结构创建源程序的中间表示，同时搜集和源程序相关的信息，存放到符号表中；后端是及其相关的，其功能是根据中间表示和符号表信息构造目标程序。 GCC的编译主要分为四个阶段：预处理（-E）、编译（-S）、汇编（-c）、链接。 ELF(Executable and Linkable Format)格式是COFF格式的变种。 ELF文件分为三种类型：可执行文件（.EXEC）、可重定位文件（.REL）和共享目标文件（.DYN）； 通常目标文件都会包含代码（.text）、数据（.data）和BSS（.bss）三个节，BSS节用于保存未初始化的全局变量和局部静态变量。\n第三章 最先诞生的是复杂指令集计算机（CISC），典型代表就是x86处理器。 对于x86处理器而言，有三个最主要的操作模式：保护模式、实地址模式和系统管理模式,此外还有一个保护模式的子模式，称为虚拟8086模式。 x86汇编语言主要的语法风格有两种：AT\u0026amp;T风格和Intel风格。\n第四章 第五章 视频 漏洞分析与利用 漏洞是bug的一种。 \/\/栈溢出-临近变量淹没 #include\u0026lt;stdio.h\u0026gt; #include\u0026lt;string.h\u0026gt; #define PASSWORD \u0026#34;1234567\u0026#34; int verify_password(char* password) { int authenticated; char buffer[8]; authenticated = strcmp(password, PASSWORD); strcpy(buffer, password); \/\/输入 12345678 ，覆盖authenticated的值，返回0 return authenticated; } int main() { int valid_flag = 0; char password[1024]; while (1) { printf(\u0026#34;input:\u0026#34;); scanf(\u0026#34;%s\u0026#34;,password); valid_flag = verify_password(password); if (valid_flag) { printf(\u0026#34;error\\n\u0026#34;); } else { printf(\u0026#34;right\\n\u0026#34;); } } return 0; } 栈溢出-返回地址覆盖\n",
       "inLanguage" : "en-US",
       "author" : "",
@@ -35,8 +35,8 @@
       "keywords" : [  ]
   }
 </script>
-<title>【零碎技术】CTF竞赛权威指南PWN</title>
-  <meta property="og:title" content="【零碎技术】CTF竞赛权威指南PWN" />
+<title>CTF竞赛权威指南PWN</title>
+  <meta property="og:title" content="CTF竞赛权威指南PWN" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="书籍 第一章 CTF：Capture The Flag 竞赛模式：解题模式（RE逆向工程、Pwn漏洞挖掘与利用、Web渗透、Crypto密码学、Mobile移动安全、Misc杂项） 、攻防模式、混合模式 著名赛事：DEFCON CTF、Pwn2Own、CGC、XCTF、强网杯、HITCON CTF、TCTF 网络安全会议：RSA、BlackHat、ISC 学术会议：CCS、NDSS、Oakland S&amp;P(A)、USENIX(A)
 第二章 编译器的结构可分为前端和后端，前端是机器无关的，其功能是把源程序分解成组成要素和相应的语法结构，通过这个结构创建源程序的中间表示，同时搜集和源程序相关的信息，存放到符号表中；后端是及其相关的，其功能是根据中间表示和符号表信息构造目标程序。 GCC的编译主要分为四个阶段：预处理（-E）、编译（-S）、汇编（-c）、链接。 ELF(Executable and Linkable Format)格式是COFF格式的变种。 ELF文件分为三种类型：可执行文件（.EXEC）、可重定位文件（.REL）和共享目标文件（.DYN）； 通常目标文件都会包含代码（.text）、数据（.data）和BSS（.bss）三个节，BSS节用于保存未初始化的全局变量和局部静态变量。
@@ -101,7 +101,7 @@
 
         </div>
         <header class="post-header">
-          <h1 class="post-title">【零碎技术】CTF竞赛权威指南PWN</h1>
+          <h1 class="post-title">CTF竞赛权威指南PWN</h1>
           
           <div class="row post-desc">
             <div class="col-xs-6">

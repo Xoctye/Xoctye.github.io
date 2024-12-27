@@ -19,8 +19,8 @@
            "@id": "https:\/\/xoctye.github.io\/"
       },
       "articleSection" : "posts",
-      "name" : "【知识积累】深入解析Windows操作系统",
-      "headline" : "【知识积累】深入解析Windows操作系统",
+      "name" : "深入解析Windows操作系统",
+      "headline" : "深入解析Windows操作系统",
       "description" : "第一章 创建服务相关函数：OpenSCManger, QueryServiceStatus, CreateService, StartService, ChangeServiceConfig, ControlService, DeleteService 窗口句柄、PID、模块名称、COM组件、.NET\n第二章 windows核心组件的文件名\n文件名 组件 ntoskrnl.exe 执行体和内核 hal.dll HAL win32k.sys windows子系统的内核模式部分 hvix64.exe 虚拟机监控程序 \\systemroot\\system32\\drivers下的.sys文件 核心驱动程序 ntdll.dll 内部支持函数，以及执行体函数的系统服务分发存根 kernel32.dll、user32.dll、gdi32.dll 核心windows子系统dll smss.exe(会话管理器)是系统创建的第一个用户模式进程。 服务控制管理器（service control manager）是一种由services.exe映像运行的特殊系统进程，负责服务进程的启动、停止和交互。\n第三章 创建进程相关函数：CreateProcess、CreateProcessWithLogonW、CreateProcessWithTokenW 每个windows进程都可以用一种执行体进程结构（EPROCESS）来表示\u0026hellip;每个线程都可以用一个执行体线程结构（ETHREAD）来表示。 EPROCESS及其大部分相关数据结构都位于系统地址空间中，唯一的例外是进程环境块（PEB），它位于进程（用户）地址空间中（因为它包含了由用户模式代码访问的信息）。 除了Idle进程，每个EPROCESS结构都会被执行体对象管理器封装为进程对象。 执行体进程结构的第一个成员名为进程控制块（ProcessControl Block, PCB）,这是一种KPROCESS类型的结构，专用于内核进程。 kd\u0026gt; dt nt!_eprocess \u002b0x000 Pcb : _KPROCESS ...... \u002b0x0ec DebugPort : Ptr32 Void ...... 由于KPROCESS位于EPROCESS的首位，EPROCESS的地址通常也可以作为KPROCESS的地址用于dt_kprocess中。 第四章",
       "inLanguage" : "en-US",
       "author" : "",
@@ -35,8 +35,8 @@
       "keywords" : [  ]
   }
 </script>
-<title>【知识积累】深入解析Windows操作系统</title>
-  <meta property="og:title" content="【知识积累】深入解析Windows操作系统" />
+<title>深入解析Windows操作系统</title>
+  <meta property="og:title" content="深入解析Windows操作系统" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="第一章 创建服务相关函数：OpenSCManger, QueryServiceStatus, CreateService, StartService, ChangeServiceConfig, ControlService, DeleteService 窗口句柄、PID、模块名称、COM组件、.NET
 第二章 windows核心组件的文件名
@@ -99,7 +99,7 @@
 
         </div>
         <header class="post-header">
-          <h1 class="post-title">【知识积累】深入解析Windows操作系统</h1>
+          <h1 class="post-title">深入解析Windows操作系统</h1>
           
           <div class="row post-desc">
             <div class="col-xs-6">

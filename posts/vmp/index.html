@@ -19,8 +19,8 @@
            "@id": "https:\/\/xoctye.github.io\/"
       },
       "articleSection" : "posts",
-      "name" : "【零碎技术】VMProtect",
-      "headline" : "【零碎技术】VMProtect",
+      "name" : "VMProtect",
+      "headline" : "VMProtect",
       "description" : "程序入口特征：\nVC6：GetVersion() VS2005、VS2008、VS2017：GetSystemTimeAsFileTime() call XXX JMP YYY DELPHI：GetMoulenHandle() 加壳：防止静态反编译 \/\/寻找入口点： 语言：C IDE：VS2022 编译器：MSVC 加壳工具：VMProtect Ultimate v3.8.4 保护选项：不开“虚拟\/变异”，开启检测调试器，其余保持默认 入口点寻找方法： 1、在GetSystemTimeAsFileTime()下断点，F9两次; 2、在栈中观察，从上到下第三个返回值就是入口; 3、倒数第五个call就是 invoke_main(); 4、进去invoke_main(),一个jmp之后就是main(); 以上思路也可以应对TMD、Engima壳（保护是默认选项） VM逆向，一篇就够了\n\/\/TLS回调函数检测调试器 #include \u0026lt;windows.h\u0026gt; #pragma comment(linker, \u0026#34;\/INCLUDE:__tls_used\u0026#34;) \/\/告知链接器将要使用TLS功能 void NTAPI TLS_CALLBACK(PVOID DllHandle, DWORD Reason, PVOID Reserved) \/\/TLS回调函数 { if (IsDebuggerPresent()) { MessageBoxA(NULL, \u0026#34;Debugger Detected!\u0026#34;, \u0026#34;TLS Callback\u0026#34;, MB_OK); ExitProcess(1); } } #pragma data_seg(\u0026#34;.CRT$XLX\u0026#34;) \/\/注册TLS回调函数 PIMAGE_TLS_CALLBACK pTLS_CALLBACKs[] = { TLS_CALLBACK, 0 }; #pragma data_seg() int main(void) { MessageBoxA(NULL, \u0026#34;Hello :)\u0026#34;, \u0026#34;main()\u0026#34;, MB_OK); } \/\/花指令-异常处理滥用 MOV AX, 0 __try { DIV AX, 0 ; 故意触发除零异常 JMP normal_path } __except (1) { MOV BX, 1 JMP after_except } normal_path: MOV BX, 2 after_except: ; 后续代码 \/\/这里故意触发除零异常进入异常处理块，在异常处理块中插入一些与异常本身关联不大的代码 \/\/（如简单设置 BX 寄存器值），并且通过跳转等方式使整个执行流程变得复杂，干扰逆向分析。 #include \u0026lt;stdio.h\u0026gt; #include \u0026lt;windows.h\u0026gt; int main() { BOOL isDebugged = IsDebuggerPresent()-1; __try { __asm { mov eax, 1 div isDebugged \/\/ 这里会触发除零异常（如果正在被调试） } } __except (EXCEPTION_EXECUTE_HANDLER) { \/\/ 异常处理块，加入干扰性代码 __asm { _emit 0xeb; _emit 0xff; _emit 0xcd; _emit 0x03; } goto after_exception; } \/\/ 如果没有发生异常，正常会执行到这里输出相应信息 printf(\u0026#34;程序正常执行\u0026#34;); return 0; after_exception: printf(\u0026#34;从异常处理块跳转过来\\n\u0026#34;); return 1; } ",
       "inLanguage" : "en-US",
       "author" : "",
@@ -35,8 +35,8 @@
       "keywords" : [  ]
   }
 </script>
-<title>【零碎技术】VMProtect</title>
-  <meta property="og:title" content="【零碎技术】VMProtect" />
+<title>VMProtect</title>
+  <meta property="og:title" content="VMProtect" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="程序入口特征：
 VC6：GetVersion() VS2005、VS2008、VS2017：GetSystemTimeAsFileTime() call XXX JMP YYY DELPHI：GetMoulenHandle() 加壳：防止静态反编译 //寻找入口点： 语言：C IDE：VS2022 编译器：MSVC 加壳工具：VMProtect Ultimate v3.8.4 保护选项：不开“虚拟/变异”，开启检测调试器，其余保持默认 入口点寻找方法： 1、在GetSystemTimeAsFileTime()下断点，F9两次; 2、在栈中观察，从上到下第三个返回值就是入口; 3、倒数第五个call就是 invoke_main(); 4、进去invoke_main(),一个jmp之后就是main(); 以上思路也可以应对TMD、Engima壳（保护是默认选项） VM逆向，一篇就够了
@@ -97,7 +97,7 @@ VC6：GetVersion() VS2005、VS2008、VS2017：GetSystemTimeAsFileTime() call XXX
 
         </div>
         <header class="post-header">
-          <h1 class="post-title">【零碎技术】VMProtect</h1>
+          <h1 class="post-title">VMProtect</h1>
           
           <div class="row post-desc">
             <div class="col-xs-6">

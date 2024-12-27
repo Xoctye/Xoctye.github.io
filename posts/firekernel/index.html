@@ -19,8 +19,8 @@
            "@id": "https:\/\/xoctye.github.io\/"
       },
       "articleSection" : "posts",
-      "name" : "【零碎技术】内核原理",
-      "headline" : "【零碎技术】内核原理",
+      "name" : "内核原理",
+      "headline" : "内核原理",
       "description" : "海哥\/火哥\/周壑内核 保护模式 #include\u0026lt;ntifs.h\u0026gt; VOID DriverUnload(PDRIVER_OBJECT pDriver) { } NTSTATUS DriverEntry(PDRIVER_OBJECT pDriver,PUNICODE_STRING pReg) { pDriver-\u0026gt;DriverUnload=DriverUnload; return STATUS_SUCCESS; } CPU的两种架构：RISC（arm）、CISC(x86) \u0026ldquo;几乎所有的冯·诺伊曼型计算机的CPU，其工作都可以分为5个阶段：取指令、指令译码、访存取数、执行指令、结果写回\u0026rdquo; 增量链接\n\/\/裸函数 void __declspec(naked) fn(){} 羽夏看Win系统内核——简述\n\/\/以下很多内容选自“羽夏的博客” 相关主页：https:\/\/www.cnblogs.com\/wingsummer CPU的三个模式：实模式、保护模式（保护内存非法访问和特权指令的使用）、虚拟8086模式 段寄存器有这几个：ES、CS、SS、DS、FS、GS、LDTR、TR，它们各有自己特殊的用途。 Mov指令：MOV AX,ES，但只能读16位的可见部分；MOV DS,AX写段寄存器，写的是96位。 读写LDTR的指令为：SLDT\/LLDT 读写TR的指令为：STR\/LTR \/\/注意在学习保护模式的时候不要把操作系统的概念扯进去，还没到操作系统层面 GDT：全局描述符表 LDT：局部描述符表 寄存器GDTR（48位）存储了GDT表的位置和大小 r gdtr \/\/读取GDT表地址 r gdtl \/\/读取GDT表的大小 dq 8003f000 l30 \/\/0x8003f000为GDT表的地址(0x30=48) 段选择子、段描述符拆解分析 CPL：CPU当前的权限级别 DPL：如果你想访问我，你应该具备什么样的权限（CPL） RPL：用什么权限去访问一个段 对于一致代码段，也称为共享段： 特权级高的程序不允许访问特权级低的数据：核心态不允许访问用户态的数据 特权级低的程序可以访问到特权级高的数据，但特权级不会改变：用户态还是用户态 对于非一致代码段： 只允许同级访问 绝对禁止不同级别的访问：核心态不是用户态，用户态也不是核心态 \/\/代码段间跳转的执行流程 1、段选择子拆分 2、查表得到段描述符 3、权限检查 4、加载段描述符 5、代码执行 ",
       "inLanguage" : "en-US",
       "author" : "",
@@ -35,8 +35,8 @@
       "keywords" : [  ]
   }
 </script>
-<title>【零碎技术】内核原理</title>
-  <meta property="og:title" content="【零碎技术】内核原理" />
+<title>内核原理</title>
+  <meta property="og:title" content="内核原理" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="海哥/火哥/周壑内核 保护模式 #include&lt;ntifs.h&gt; VOID DriverUnload(PDRIVER_OBJECT pDriver) { } NTSTATUS DriverEntry(PDRIVER_OBJECT pDriver,PUNICODE_STRING pReg) { pDriver-&gt;DriverUnload=DriverUnload; return STATUS_SUCCESS; } CPU的两种架构：RISC（arm）、CISC(x86) &ldquo;几乎所有的冯·诺伊曼型计算机的CPU，其工作都可以分为5个阶段：取指令、指令译码、访存取数、执行指令、结果写回&rdquo; 增量链接
 //裸函数 void __declspec(naked) fn(){} 羽夏看Win系统内核——简述
@@ -97,7 +97,7 @@
 
         </div>
         <header class="post-header">
-          <h1 class="post-title">【零碎技术】内核原理</h1>
+          <h1 class="post-title">内核原理</h1>
           
           <div class="row post-desc">
             <div class="col-xs-6">

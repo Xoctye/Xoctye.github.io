@@ -19,8 +19,8 @@
            "@id": "https:\/\/xoctye.github.io\/"
       },
       "articleSection" : "posts",
-      "name" : "【零碎技术】花指令",
-      "headline" : "【零碎技术】花指令",
+      "name" : "花指令",
+      "headline" : "花指令",
       "description" : "\/\/形式：插入操作码 #include\u0026lt;stdio.h\u0026gt; int main() { _asm { xor eax, eax; jz s; _emit 0x11; _emit 0x22; _emit 0x33;\/\/0x33是xor指令的操作码，会导致后面正常的Push指令被错误解析 s: } printf(\u0026#34;Hello World!\\n\u0026#34;); } \/\/形式：插入改变堆栈平衡的汇编代码 int main() { _asm { xor eax, eax; jz s; add esp, 0x11; s: } printf(\u0026#34;Hello World!\\n\u0026#34;); } \/\/上面这个花指令测试的时候IDA可以正常识别 \/\/https:\/\/bbs.kanxue.com\/thread-283122.htm\n",
       "inLanguage" : "en-US",
       "author" : "",
@@ -35,8 +35,8 @@
       "keywords" : [  ]
   }
 </script>
-<title>【零碎技术】花指令</title>
-  <meta property="og:title" content="【零碎技术】花指令" />
+<title>花指令</title>
+  <meta property="og:title" content="花指令" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="//形式：插入操作码 #include&lt;stdio.h&gt; int main() { _asm { xor eax, eax; jz s; _emit 0x11; _emit 0x22; _emit 0x33;//0x33是xor指令的操作码，会导致后面正常的Push指令被错误解析 s: } printf(&#34;Hello World!\n&#34;); } //形式：插入改变堆栈平衡的汇编代码 int main() { _asm { xor eax, eax; jz s; add esp, 0x11; s: } printf(&#34;Hello World!\n&#34;); } //上面这个花指令测试的时候IDA可以正常识别 //https://bbs.kanxue.com/thread-283122.htm
 " />
@@ -95,7 +95,7 @@
 
         </div>
         <header class="post-header">
-          <h1 class="post-title">【零碎技术】花指令</h1>
+          <h1 class="post-title">花指令</h1>
           
           <div class="row post-desc">
             <div class="col-xs-6">
