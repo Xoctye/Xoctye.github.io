@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.140.1">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="" />
+  <meta property="og:url" content="http://localhost:1313/posts/firekernel/" />
+  <link rel="canonical" href="http://localhost:1313/posts/firekernel/" /><link rel="alternate" type="application/atom+xml" href="http://localhost:1313/index.xml" title="Shredder&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "http:\/\/localhost:1313\/"
+      },
+      "articleSection" : "posts",
+      "name" : "【零碎技术】内核原理",
+      "headline" : "【零碎技术】内核原理",
+      "description" : "海哥\/火哥\/周壑内核 保护模式 #include\u0026lt;ntifs.h\u0026gt; VOID DriverUnload(PDRIVER_OBJECT pDriver) { } NTSTATUS DriverEntry(PDRIVER_OBJECT pDriver,PUNICODE_STRING pReg) { pDriver-\u0026gt;DriverUnload=DriverUnload; return STATUS_SUCCESS; } CPU的两种架构：RISC（arm）、CISC(x86) \u0026ldquo;几乎所有的冯·诺伊曼型计算机的CPU，其工作都可以分为5个阶段：取指令、指令译码、访存取数、执行指令、结果写回\u0026rdquo; 增量链接\n\/\/裸函数 void __declspec(naked) fn(){} 羽夏看Win系统内核——简述\n\/\/以下很多内容选自“羽夏的博客” 相关主页：https:\/\/www.cnblogs.com\/wingsummer CPU的三个模式：实模式、保护模式（保护内存非法访问和特权指令的使用）、虚拟8086模式 段寄存器有这几个：ES、CS、SS、DS、FS、GS、LDTR、TR，它们各有自己特殊的用途。 Mov指令：MOV AX,ES，但只能读16位的可见部分；MOV DS,AX写段寄存器，写的是96位。 读写LDTR的指令为：SLDT\/LLDT 读写TR的指令为：STR\/LTR \/\/注意在学习保护模式的时候不要把操作系统的概念扯进去，还没到操作系统层面 GDT：全局描述符表 LDT：局部描述符表 寄存器GDTR（48位）存储了GDT表的位置和大小 r gdtr \/\/读取GDT表地址 r gdtl \/\/读取GDT表的大小 dq 8003f000 l30 \/\/0x8003f000为GDT表的地址(0x30=48) 段选择子、段描述符拆解分析 CPL：CPU当前的权限级别 DPL：如果你想访问我，你应该具备什么样的权限（CPL） RPL：用什么权限去访问一个段 对于一致代码段，也称为共享段： 特权级高的程序不允许访问特权级低的数据：核心态不允许访问用户态的数据 特权级低的程序可以访问到特权级高的数据，但特权级不会改变：用户态还是用户态 对于非一致代码段： 只允许同级访问 绝对禁止不同级别的访问：核心态不是用户态，用户态也不是核心态 \/\/代码段间跳转的执行流程 1、段选择子拆分 2、查表得到段描述符 3、权限检查 4、加载段描述符 5、代码执行 ",
+      "inLanguage" : "en-US",
+      "author" : "",
+      "creator" : "",
+      "publisher": "",
+      "accountablePerson" : "",
+      "copyrightHolder" : "",
+      "copyrightYear" : "2024",
+      "datePublished": "2024-12-21 17:28:15 \u002b0000 UTC",
+      "dateModified" : "2024-12-21 17:28:15 \u002b0000 UTC",
+      "url" : "http:\/\/localhost:1313\/posts\/firekernel\/",
+      "keywords" : [  ]
+  }
+</script>
+<title>【零碎技术】内核原理</title>
+  <meta property="og:title" content="【零碎技术】内核原理" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="海哥/火哥/周壑内核 保护模式 #include&lt;ntifs.h&gt; VOID DriverUnload(PDRIVER_OBJECT pDriver) { } NTSTATUS DriverEntry(PDRIVER_OBJECT pDriver,PUNICODE_STRING pReg) { pDriver-&gt;DriverUnload=DriverUnload; return STATUS_SUCCESS; } CPU的两种架构：RISC（arm）、CISC(x86) &ldquo;几乎所有的冯·诺伊曼型计算机的CPU，其工作都可以分为5个阶段：取指令、指令译码、访存取数、执行指令、结果写回&rdquo; 增量链接
+//裸函数 void __declspec(naked) fn(){} 羽夏看Win系统内核——简述
+//以下很多内容选自“羽夏的博客” 相关主页：https://www.cnblogs.com/wingsummer CPU的三个模式：实模式、保护模式（保护内存非法访问和特权指令的使用）、虚拟8086模式 段寄存器有这几个：ES、CS、SS、DS、FS、GS、LDTR、TR，它们各有自己特殊的用途。 Mov指令：MOV AX,ES，但只能读16位的可见部分；MOV DS,AX写段寄存器，写的是96位。 读写LDTR的指令为：SLDT/LLDT 读写TR的指令为：STR/LTR //注意在学习保护模式的时候不要把操作系统的概念扯进去，还没到操作系统层面 GDT：全局描述符表 LDT：局部描述符表 寄存器GDTR（48位）存储了GDT表的位置和大小 r gdtr //读取GDT表地址 r gdtl //读取GDT表的大小 dq 8003f000 l30 //0x8003f000为GDT表的地址(0x30=48) 段选择子、段描述符拆解分析 CPL：CPU当前的权限级别 DPL：如果你想访问我，你应该具备什么样的权限（CPL） RPL：用什么权限去访问一个段 对于一致代码段，也称为共享段： 特权级高的程序不允许访问特权级低的数据：核心态不允许访问用户态的数据 特权级低的程序可以访问到特权级高的数据，但特权级不会改变：用户态还是用户态 对于非一致代码段： 只允许同级访问 绝对禁止不同级别的访问：核心态不是用户态，用户态也不是核心态 //代码段间跳转的执行流程 1、段选择子拆分 2、查表得到段描述符 3、权限检查 4、加载段描述符 5、代码执行 " />
+  <meta name="description" content="海哥/火哥/周壑内核 保护模式 #include&lt;ntifs.h&gt; VOID DriverUnload(PDRIVER_OBJECT pDriver) { } NTSTATUS DriverEntry(PDRIVER_OBJECT pDriver,PUNICODE_STRING pReg) { pDriver-&gt;DriverUnload=DriverUnload; return STATUS_SUCCESS; } CPU的两种架构：RISC（arm）、CISC(x86) &ldquo;几乎所有的冯·诺伊曼型计算机的CPU，其工作都可以分为5个阶段：取指令、指令译码、访存取数、执行指令、结果写回&rdquo; 增量链接
+//裸函数 void __declspec(naked) fn(){} 羽夏看Win系统内核——简述
+//以下很多内容选自“羽夏的博客” 相关主页：https://www.cnblogs.com/wingsummer CPU的三个模式：实模式、保护模式（保护内存非法访问和特权指令的使用）、虚拟8086模式 段寄存器有这几个：ES、CS、SS、DS、FS、GS、LDTR、TR，它们各有自己特殊的用途。 Mov指令：MOV AX,ES，但只能读16位的可见部分；MOV DS,AX写段寄存器，写的是96位。 读写LDTR的指令为：SLDT/LLDT 读写TR的指令为：STR/LTR //注意在学习保护模式的时候不要把操作系统的概念扯进去，还没到操作系统层面 GDT：全局描述符表 LDT：局部描述符表 寄存器GDTR（48位）存储了GDT表的位置和大小 r gdtr //读取GDT表地址 r gdtl //读取GDT表的大小 dq 8003f000 l30 //0x8003f000为GDT表的地址(0x30=48) 段选择子、段描述符拆解分析 CPL：CPU当前的权限级别 DPL：如果你想访问我，你应该具备什么样的权限（CPL） RPL：用什么权限去访问一个段 对于一致代码段，也称为共享段： 特权级高的程序不允许访问特权级低的数据：核心态不允许访问用户态的数据 特权级低的程序可以访问到特权级高的数据，但特权级不会改变：用户态还是用户态 对于非一致代码段： 只允许同级访问 绝对禁止不同级别的访问：核心态不是用户态，用户态也不是核心态 //代码段间跳转的执行流程 1、段选择子拆分 2、查表得到段描述符 3、权限检查 4、加载段描述符 5、代码执行 " />
+  <meta property="og:locale" content="cn" /><meta property="og:image" content="" />
+  
+
+  
+    <style>body{font-family:bree serif,sans-serif;-webkit-font-smoothing:antialiased;margin:0 20px}article{max-width:800px;margin-left:auto;margin-right:auto}a{color:#000;text-decoration:none}a:hover{font-weight:600;text-decoration:underline}.post-ads{margin:50px 0}.markdown-body{font-size:18px;max-width:100%}.markdown-body a{text-decoration:underline;text-decoration-color:#000}.markdown-body blockquote{margin:0;padding:0 1em;color:#57606a;border-left:.25em solid #d0d7de}.markdown-body pre{padding:16px;overflow:auto;border-radius:10px}.markdown-body code{padding:.2em .4em;font-size:85%;background-color:#f6f8fa;border-radius:6px}.markdown-body pre>code{padding:0;font-size:100%;background-color:inherit;border:0}.Chinese .markdown-body{line-height:200%}.site-date-catalog{font-size:2rem}.header-title{font-size:2rem;font-weight:700;margin-top:32px;font-family:bungee shade,sans-serif}.header-title a{text-decoration:none}.header-subtitle{color:#666}.header-items{margin:10px 0}.header-item{margin:0 5px}.header-line{width:100%;border-width:2px;border-color:#482936;border-style:solid none none none}.lang-switch{font-weight:600}#posts-list{min-height:600px}.posts-line{font-size:1.2rem;margin:12px 0}.posts-categories{font-size:.8rem;margin:auto;text-align:center}.posts-category{padding:3px 0;border:#000 2px solid;border-radius:5px}.site-footer{margin-top:50px}.site-footer-item{margin-right:12px}.post-header{margin-bottom:50px}.post-title{font-size:2rem;font-weight:600}.post-tags{display:inline;font-weight:600;padding:2px 5px;margin-right:6px;border:#000 2px solid;border-radius:5px}.post-date{font-weight:800;font-style:italic}.post-author{float:right;font-weight:600}.page-content{min-height:60%}.post-content{margin-bottom:50px}.post-content p{hyphens:auto;line-height:1.8;text-justify:ideographic;margin-bottom:1em}.post-content img{max-width:100%;display:block;margin-right:auto;margin-top:6px}.post-content .post-gallery{display:flex;flex-wrap:wrap;gap:6px}.post-content .post-gallery img{margin-right:auto;margin-top:auto;width:calc(50% - 3px)}.related-content{border-width:3px;border-style:solid;border-color:#000;padding:0 10px;margin-bottom:50px;margin-top:100px}.related-content li{margin:5px 0}.taxonomy-term{font-size:3rem}.gallery-img{text-align:center}.gallery-img span{text-align:center}.gallery-img-desc{font-size:.8em;font-weight:800}#disqus_thread{position:relative}#disqus_thread:after{content:"";display:block;height:55px;width:100%;position:absolute;bottom:0;background:#fff}@media screen and (max-width:600px){.header-title,.header-subtitle,.header-items{}.posts-line{font-size:16px}.markdown-body{font-size:16px}.post-title{font-size:2rem}.post-content p{letter-spacing:.05em}.post-content .post-gallery img{width:100%}}@media screen and (max-width:48em){.posts-category{display:none}}</style>
+  
+  
+    <style>.container,.container-fluid{margin-right:auto;margin-left:auto}.container-fluid{padding-right:2rem;padding-left:2rem}.row{box-sizing:border-box;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:0;-ms-flex:0 1 auto;flex:initial;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-ms-flex-wrap:wrap;flex-wrap:wrap;margin-right:-.5rem;margin-left:-.5rem}.row.reverse{-webkit-box-orient:horizontal;-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse}.col.reverse{-webkit-box-orient:vertical;-webkit-box-direction:reverse;-ms-flex-direction:column-reverse;flex-direction:column-reverse}.col-xs,.col-xs-1,.col-xs-10,.col-xs-11,.col-xs-12,.col-xs-2,.col-xs-3,.col-xs-4,.col-xs-5,.col-xs-6,.col-xs-7,.col-xs-8,.col-xs-9,.col-xs-offset-0,.col-xs-offset-1,.col-xs-offset-10,.col-xs-offset-11,.col-xs-offset-12,.col-xs-offset-2,.col-xs-offset-3,.col-xs-offset-4,.col-xs-offset-5,.col-xs-offset-6,.col-xs-offset-7,.col-xs-offset-8,.col-xs-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-xs{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-xs-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-xs-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-xs-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-xs-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-xs-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-xs-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-xs-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-xs-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-xs-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-xs-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-xs-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-xs-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-xs-offset-0{margin-left:0}.col-xs-offset-1{margin-left:8.33333333%}.col-xs-offset-2{margin-left:16.66666667%}.col-xs-offset-3{margin-left:25%}.col-xs-offset-4{margin-left:33.33333333%}.col-xs-offset-5{margin-left:41.66666667%}.col-xs-offset-6{margin-left:50%}.col-xs-offset-7{margin-left:58.33333333%}.col-xs-offset-8{margin-left:66.66666667%}.col-xs-offset-9{margin-left:75%}.col-xs-offset-10{margin-left:83.33333333%}.col-xs-offset-11{margin-left:91.66666667%}.start-xs{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-xs{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-xs{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-xs{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-xs{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-xs{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-xs{-ms-flex-pack:distribute;justify-content:space-around}.between-xs{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-xs{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-xs{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}@media only screen and (min-width:48em){.container{width:49rem}.col-sm,.col-sm-1,.col-sm-10,.col-sm-11,.col-sm-12,.col-sm-2,.col-sm-3,.col-sm-4,.col-sm-5,.col-sm-6,.col-sm-7,.col-sm-8,.col-sm-9,.col-sm-offset-0,.col-sm-offset-1,.col-sm-offset-10,.col-sm-offset-11,.col-sm-offset-12,.col-sm-offset-2,.col-sm-offset-3,.col-sm-offset-4,.col-sm-offset-5,.col-sm-offset-6,.col-sm-offset-7,.col-sm-offset-8,.col-sm-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-sm{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-sm-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-sm-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-sm-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-sm-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-sm-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-sm-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-sm-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-sm-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-sm-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-sm-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-sm-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-sm-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-sm-offset-0{margin-left:0}.col-sm-offset-1{margin-left:8.33333333%}.col-sm-offset-2{margin-left:16.66666667%}.col-sm-offset-3{margin-left:25%}.col-sm-offset-4{margin-left:33.33333333%}.col-sm-offset-5{margin-left:41.66666667%}.col-sm-offset-6{margin-left:50%}.col-sm-offset-7{margin-left:58.33333333%}.col-sm-offset-8{margin-left:66.66666667%}.col-sm-offset-9{margin-left:75%}.col-sm-offset-10{margin-left:83.33333333%}.col-sm-offset-11{margin-left:91.66666667%}.start-sm{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-sm{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-sm{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-sm{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-sm{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-sm{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-sm{-ms-flex-pack:distribute;justify-content:space-around}.between-sm{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-sm{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-sm{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:64em){.container{width:65rem}.col-md,.col-md-1,.col-md-10,.col-md-11,.col-md-12,.col-md-2,.col-md-3,.col-md-4,.col-md-5,.col-md-6,.col-md-7,.col-md-8,.col-md-9,.col-md-offset-0,.col-md-offset-1,.col-md-offset-10,.col-md-offset-11,.col-md-offset-12,.col-md-offset-2,.col-md-offset-3,.col-md-offset-4,.col-md-offset-5,.col-md-offset-6,.col-md-offset-7,.col-md-offset-8,.col-md-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-md{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-md-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-md-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-md-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-md-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-md-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-md-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-md-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-md-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-md-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-md-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-md-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-md-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-md-offset-0{margin-left:0}.col-md-offset-1{margin-left:8.33333333%}.col-md-offset-2{margin-left:16.66666667%}.col-md-offset-3{margin-left:25%}.col-md-offset-4{margin-left:33.33333333%}.col-md-offset-5{margin-left:41.66666667%}.col-md-offset-6{margin-left:50%}.col-md-offset-7{margin-left:58.33333333%}.col-md-offset-8{margin-left:66.66666667%}.col-md-offset-9{margin-left:75%}.col-md-offset-10{margin-left:83.33333333%}.col-md-offset-11{margin-left:91.66666667%}.start-md{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-md{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-md{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-md{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-md{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-md{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-md{-ms-flex-pack:distribute;justify-content:space-around}.between-md{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-md{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-md{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:75em){.container{width:76rem}.col-lg,.col-lg-1,.col-lg-10,.col-lg-11,.col-lg-12,.col-lg-2,.col-lg-3,.col-lg-4,.col-lg-5,.col-lg-6,.col-lg-7,.col-lg-8,.col-lg-9,.col-lg-offset-0,.col-lg-offset-1,.col-lg-offset-10,.col-lg-offset-11,.col-lg-offset-12,.col-lg-offset-2,.col-lg-offset-3,.col-lg-offset-4,.col-lg-offset-5,.col-lg-offset-6,.col-lg-offset-7,.col-lg-offset-8,.col-lg-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-lg{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-lg-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-lg-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-lg-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-lg-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-lg-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-lg-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-lg-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-lg-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-lg-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-lg-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-lg-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-lg-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-lg-offset-0{margin-left:0}.col-lg-offset-1{margin-left:8.33333333%}.col-lg-offset-2{margin-left:16.66666667%}.col-lg-offset-3{margin-left:25%}.col-lg-offset-4{margin-left:33.33333333%}.col-lg-offset-5{margin-left:41.66666667%}.col-lg-offset-6{margin-left:50%}.col-lg-offset-7{margin-left:58.33333333%}.col-lg-offset-8{margin-left:66.66666667%}.col-lg-offset-9{margin-left:75%}.col-lg-offset-10{margin-left:83.33333333%}.col-lg-offset-11{margin-left:91.66666667%}.start-lg{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-lg{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-lg{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-lg{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-lg{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-lg{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-lg{-ms-flex-pack:distribute;justify-content:space-around}.between-lg{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-lg{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-lg{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}</style>
+  
+
+  
+
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Shredder&#39;s Blog">
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css?family=Bree+Serif|Bungee+Shade" rel="stylesheet">
+  
+  
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxx"></script>
+</head>
+
+
+<body>
+  <article class="post 中文" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="header-title">
+    <a href="/"
+      >Shredder&#39;s Blog</a
+    >
+  </div>
+  <div class="header-subtitle"></div>
+</header>
+<div class="row end-md header-items">
+  
+  <div class="header-item">
+    <a href="https://github.com/Xoctye" target="_blank">Github</a>
+  </div>
+  
+</div>
+<div class="row">
+   
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">【零碎技术】内核原理</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2024-12-21 17:28:15 UTC">
+                21 Dec 2024
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="">海哥</span>/<span style="">火哥</span>/<span style="">周壑内核</span>
+</span></span></code></pre></div><h1 id="保护模式">保护模式</h1>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="">#include&lt;ntifs.h&gt;
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span>VOID DriverUnload(PDRIVER_OBJECT pDriver)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NTSTATUS DriverEntry(PDRIVER_OBJECT pDriver,PUNICODE_STRING pReg)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    pDriver-&gt;DriverUnload=DriverUnload;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">return</span> STATUS_SUCCESS;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><img src="/images/hg0001.png" alt="">
+CPU的两种架构：RISC（arm）、CISC(x86)
+&ldquo;几乎所有的冯·诺伊曼型计算机的CPU，其工作都可以分为5个阶段：取指令、指令译码、访存取数、执行指令、结果写回&rdquo;
+<img src="/images/hg0002.png" alt="">
+<img src="/images/hg0003.PNG" alt="">
+<a href="https://www.shuzhiduo.com/A/kvJ3YVN7dg/">增量链接</a></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//裸函数
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">void</span> __declspec(<span style="font-weight:bold">naked</span>) fn(){}
+</span></span></code></pre></div><p><a href="https://www.cnblogs.com/wingsummer/p/15303519.html">羽夏看Win系统内核——简述</a></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//以下很多内容选自“羽夏的博客”
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">相关主页：</span>https:<span style="font-style:italic">//www.cnblogs.com/wingsummer
+</span></span></span></code></pre></div><p>CPU的三个模式：实模式、保护模式（保护内存非法访问和特权指令的使用）、虚拟8086模式
+<img src="/images/hg0004.png" alt="">
+ 段寄存器有这几个：ES、CS、SS、DS、FS、GS、LDTR、TR，它们各有自己特殊的用途。
+<img src="/images/hg0005.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>Mov指令<span style="">：</span>MOV AX,ES<span style="">，但只能读</span>16<span style="">位的可见部分；</span>MOV DS,AX写段寄存器<span style="">，写的是</span>96<span style="">位。</span>
+</span></span><span style="display:flex;"><span><span style="">读写</span>LDTR的指令为<span style="">：</span>SLDT/LLDT
+</span></span><span style="display:flex;"><span><span style="">读写</span>TR的指令为<span style="">：</span>STR/LTR
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//注意在学习保护模式的时候不要把操作系统的概念扯进去，还没到操作系统层面
+</span></span></span></code></pre></div><p>GDT：全局描述符表
+LDT：局部描述符表
+寄存器GDTR（48位）存储了GDT表的位置和大小
+<img src="/images/hg0006.png" alt="">
+<img src="/images/hg0007.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>r gdtr    <span style="font-style:italic">//读取GDT表地址
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>r gdtl    <span style="font-style:italic">//读取GDT表的大小
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>dq 8003f000 l30    <span style="font-style:italic">//0x8003f000为GDT表的地址(0x30=48)
+</span></span></span></code></pre></div><p><a href="https://segmentfault.com/a/1190000044835095">段选择子、段描述符拆解分析</a>
+<img src="/images/hg0008.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>CPL<span style="">：</span>CPU当前的权限级别
+</span></span><span style="display:flex;"><span>DPL<span style="">：如果你想访问我，你应该具备什么样的权限（</span>CPL<span style="">）</span>
+</span></span><span style="display:flex;"><span>RPL<span style="">：用什么权限去访问一个段</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="">对于一致代码段，也称为共享段：</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">特权级高的程序不允许访问特权级低的数据：核心态不允许访问用户态的数据</span>
+</span></span><span style="display:flex;"><span><span style="">特权级低的程序可以访问到特权级高的数据，但特权级不会改变：用户态还是用户态</span>
+</span></span><span style="display:flex;"><span><span style="">对于非一致代码段：</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">只允许同级访问</span>
+</span></span><span style="display:flex;"><span><span style="">绝对禁止不同级别的访问：核心态不是用户态，用户态也不是核心态</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//代码段间跳转的执行流程
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>1<span style="">、段选择子拆分</span>
+</span></span><span style="display:flex;"><span>2<span style="">、查表得到段描述符</span>
+</span></span><span style="display:flex;"><span>3<span style="">、权限检查</span>
+</span></span><span style="display:flex;"><span>4<span style="">、加载段描述符</span>
+</span></span><span style="display:flex;"><span>5<span style="">、代码执行</span>
+</span></span></code></pre></div><p><img src="/images/hg0009.png" alt="">
+<img src="/images/hg0010.png" alt="">
+<img src="/images/hg0011.png" alt="">
+<img src="/images/hg0012.png" alt="">
+<img src="/images/hg0013.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="">调用门执行流程如下所示：</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">指令格式：</span>CALL CS:EIP (EIP是废弃的)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">执行步骤：</span>
+</span></span><span style="display:flex;"><span>1<span style="">、根据</span>CS的值查GDT表<span style="">，找到对应的段描述符且该描述符是一个调用门。</span>
+</span></span><span style="display:flex;"><span>2<span style="">、在调用门描述符中存储另一个代码段的段选择子，将其加载到</span>CS中<span style="">。</span>
+</span></span><span style="display:flex;"><span>3<span style="">、选择子指向的段的</span>Base + <span style="">偏移地址就是真正要执行的地址。</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>IDT表包含3种门描述符<span style="">：任务门描述符、中断门描述符、陷阱门描述符</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="">指令格式：</span>INT N (N为中断门索引号)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">执行步骤：</span>
+</span></span><span style="display:flex;"><span>1<span style="">、在没有权限切换时，会向堆栈顺次压入</span>EFLAG<span style="">、</span>CS和EIP<span style="">；如果有权限切换，会向堆栈顺次压入</span>SS<span style="">、</span>ESP<span style="">、</span>EFLAG<span style="">、</span>CS和EIP<span style="">。</span>
+</span></span><span style="display:flex;"><span>2<span style="">、</span>CPU会索引到IDT表<span style="">。后面的</span>N表示查IDT表项的下标<span style="">。对比调用门，中断门没有了</span>RPL<span style="">，故</span>CPU只会校验CPL<span style="">。</span>
+</span></span><span style="display:flex;"><span>3<span style="">、在中断门中</span>,<span style="">不能通过</span>RETF返回<span style="">，而应该通过</span>IRET/IRETD指令返回<span style="">。</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="">总结：</span>
+</span></span><span style="display:flex;"><span>1<span style="">、</span>CS的权限一旦改变<span style="">，</span>SS的权限也要随着改变<span style="">，</span>CS与SS的等级必须一样<span style="">。</span>
+</span></span><span style="display:flex;"><span>2<span style="">、</span>JMP FAR只能跳转到同级非一致代码段<span style="">，但</span>CALL FAR可以通过调用门提权<span style="">，提升</span>CPL的权限<span style="">。</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">调用门总结：</span>
+</span></span><span style="display:flex;"><span>1<span style="">、当通过门，权限不变的时候，只会</span>PUSH两个值<span style="">：</span>CS和返回地址<span style="">，新的</span>CS的值由调用门决定<span style="">。</span>
+</span></span><span style="display:flex;"><span>2<span style="">、当通过门，权限改变的时候，会</span>PUSH四个值<span style="">：</span>SS<span style="">、</span>ESP<span style="">、</span>CS和返回地址<span style="">，新的</span>CS的值由调用门决定<span style="">，新的</span>SS和ESP由TSS提供<span style="">。</span>
+</span></span><span style="display:flex;"><span>3<span style="">、通过门调用时，要执行哪行代码由调用门决定，但使用</span>RETF返回时<span style="">，由堆栈中压入的值决定，这就是说，进门时只能按指定路线走，出门时可以</span>FQ<span style="">，即只要改变堆栈里面的值就可以想去哪去哪。</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="">任务段（</span>TSS<span style="">，</span>Task-state segment<span style="">）</span>
+</span></span><span style="display:flex;"><span><span style="">任务门的执行流程：</span>
+</span></span><span style="display:flex;"><span>1<span style="">、通过</span>INT N的指令进行触发任务门
+</span></span><span style="display:flex;"><span>2<span style="">、查</span>IDT表<span style="">，找到任务门描述符</span>
+</span></span><span style="display:flex;"><span>3<span style="">、通过任务门描述符，查</span>GDT表<span style="">，找到</span>TSS段描述符
+</span></span><span style="display:flex;"><span>4<span style="">、使用</span>TSS段中的值修改TR寄存器
+</span></span><span style="display:flex;"><span>5<span style="">、</span>IRETD返回
+</span></span></code></pre></div><p><img src="/images/hg0014.png" alt="">
+<img src="/images/hg0015.png" alt="">
+<img src="/images/hg0016.png" alt=""></p>
+<hr>
+<h1 id="驱动">驱动</h1>
+<p><img src="/images/hg0017.png" alt=""></p>
+<table>
+  <thead>
+      <tr>
+          <th>普通程序</th>
+          <th>内核</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>malloc</td>
+          <td>ExAllocatePoolWithTag</td>
+      </tr>
+      <tr>
+          <td>memset</td>
+          <td>RtlFillMemory</td>
+      </tr>
+      <tr>
+          <td>memcpy</td>
+          <td>RtlMoveMemory</td>
+      </tr>
+      <tr>
+          <td>free</td>
+          <td>ExFreePool</td>
+      </tr>
+  </tbody>
+</table>
+<h1 id="系统调用">系统调用</h1>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="">并不是所有的</span>API必须进0环的<span style="">，可以在</span>3<span style="">环完全实现；比如</span>Ntdll.dll导出的memcmp函数<span style="">。</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>_KUSER_SHARED_DATA
+</span></span></code></pre></div><p><img src="/images/hg0018.png" alt="">
+<img src="/images/hg0019.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>SSDT的全称是System Services Descriptor Table<span style="">，意为系统服务描述符表。在</span>32<span style="">位</span>XP中<span style="">，我们可以通过</span>ETHREAD结构体加偏移的方式进行访问<span style="">。在内核文件中，有一个变量是导出的：</span>KeServiceDescriptorTable<span style="">。通过它我们可以访问</span>SSDT
+</span></span></code></pre></div><hr>
+<h1 id="进程与线程">进程与线程</h1>
+<p>每个windows进程在0环都有一个对应的结构体：EPROCESS；
+每个Windows线程在0环都有一个对应的结构体ETHREAD；</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>KPCR中存储了CPU本身要用的一些重要数据<span style="">：</span>GDT<span style="">、</span>IDT以及线程相关的一些信息<span style="">；</span>
+</span></span><span style="display:flex;"><span><span style="">当线程进入</span>0<span style="">环时，</span>FS:[0]<span style="">指向</span>KPCR<span style="">，</span>3<span style="">环时</span>FS:[0]<span style="">指向</span> TEB<span style="">；</span>
+</span></span><span style="display:flex;"><span><span style="">每个</span>CPU都有一个KPCR结构体<span style="">，即一个核一个。</span>
+</span></span></code></pre></div><hr>
+<h1 id="句柄表">句柄表</h1>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span> <span style="">句柄是给</span>3<span style="">环用的，而不是给内核用的；</span>Windows所有涉及句柄的API<span style="">，一旦到了真正函数实现的部分，就立刻使用</span>ObReferenceObjectByHandle把它转化为真正的指向内核对象的指针
+</span></span></code></pre></div><hr>
+<h1 id="apc">APC</h1>
+<p><a href="https://cata1oc.github.io/2020/05/26/APC%E7%9A%84%E6%9C%AC%E8%B4%A8/">APC的本质</a>
+<img src="/images/hg0020.png" alt=""></p>
+<hr>
+<h1 id="同步">同步</h1>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+        
+          <div class="row">
+            <div class="col-xs-12">
+              
+            </div>
+          </div>
+
+          
+
+
+
+          
+          
+          <div style="height: 50px;"></div>
+          
+          <div class="post-comments">
+            <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://joway.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+          </div>
+          
+        
+
+        <div class="site-footer">
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  
+
+<script>
+  
+  
+    
+    
+  
+</script>
+
+  
+
+</body>
+
+</html>

