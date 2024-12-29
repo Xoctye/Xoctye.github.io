@@ -2,84 +2,84 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/categories/</loc>
+    <loc>https://xoctye.github.io/categories/</loc>
     <lastmod>2024-12-24T13:02:30+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/</loc>
+    <loc>https://xoctye.github.io/posts/</loc>
     <lastmod>2024-12-24T13:02:30+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/</loc>
+    <loc>https://xoctye.github.io/</loc>
     <lastmod>2024-12-24T13:02:30+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/coding/</loc>
+    <loc>https://xoctye.github.io/posts/coding/</loc>
     <lastmod>2024-12-24T13:02:30+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/%E9%9B%B6%E7%A2%8E%E6%8A%80%E6%9C%AF/</loc>
+    <loc>https://xoctye.github.io/categories/%E9%9B%B6%E7%A2%8E%E6%8A%80%E6%9C%AF/</loc>
     <lastmod>2024-12-24T13:02:30+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/firekernel/</loc>
+    <loc>https://xoctye.github.io/posts/firekernel/</loc>
     <lastmod>2024-12-21T17:28:15+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/%E7%9F%A5%E8%AF%86%E7%A7%AF%E7%B4%AF/</loc>
+    <loc>https://xoctye.github.io/categories/%E7%9F%A5%E8%AF%86%E7%A7%AF%E7%B4%AF/</loc>
     <lastmod>2024-12-17T18:29:07+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/computernetwork/</loc>
+    <loc>https://xoctye.github.io/posts/computernetwork/</loc>
     <lastmod>2024-12-17T18:29:07+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/os/</loc>
+    <loc>https://xoctye.github.io/posts/os/</loc>
     <lastmod>2024-12-17T18:26:40+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/datastructure/</loc>
+    <loc>https://xoctye.github.io/posts/datastructure/</loc>
     <lastmod>2024-12-16T19:51:44+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/jz/</loc>
+    <loc>https://xoctye.github.io/posts/jz/</loc>
     <lastmod>2024-12-16T15:20:07+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/vul/</loc>
+    <loc>https://xoctye.github.io/posts/vul/</loc>
     <lastmod>2024-12-16T09:16:13+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/trojan/</loc>
+    <loc>https://xoctye.github.io/posts/trojan/</loc>
     <lastmod>2024-12-14T17:45:35+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/junkcode/</loc>
+    <loc>https://xoctye.github.io/posts/junkcode/</loc>
     <lastmod>2024-12-13T20:00:11+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/vmp/</loc>
+    <loc>https://xoctye.github.io/posts/vmp/</loc>
     <lastmod>2024-12-12T18:44:25+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/sandbox/</loc>
+    <loc>https://xoctye.github.io/posts/sandbox/</loc>
     <lastmod>2024-12-11T17:36:17+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/fuzz/</loc>
+    <loc>https://xoctye.github.io/posts/fuzz/</loc>
     <lastmod>2024-12-10T17:42:07+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/rustbase/</loc>
+    <loc>https://xoctye.github.io/posts/rustbase/</loc>
     <lastmod>2024-12-09T19:24:28+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/bypassav/</loc>
+    <loc>https://xoctye.github.io/posts/bypassav/</loc>
     <lastmod>2024-12-09T09:24:56+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/ctfpwn/</loc>
+    <loc>https://xoctye.github.io/posts/ctfpwn/</loc>
     <lastmod>2024-11-25T12:08:25+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/windowsinternals/</loc>
+    <loc>https://xoctye.github.io/posts/windowsinternals/</loc>
     <lastmod>2024-11-21T10:12:08+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/moderncompilerimplementationinc/</loc>
+    <loc>https://xoctye.github.io/posts/moderncompilerimplementationinc/</loc>
     <lastmod>2024-11-19T17:02:03+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/introductiontoalgorithms/</loc>
+    <loc>https://xoctye.github.io/posts/introductiontoalgorithms/</loc>
     <lastmod>2024-11-19T14:41:42+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/csapp/</loc>
+    <loc>https://xoctye.github.io/posts/csapp/</loc>
     <lastmod>2024-11-14T16:42:16+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/wdk/</loc>
+    <loc>https://xoctye.github.io/posts/wdk/</loc>
     <lastmod>2024-10-30T10:08:13+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/%E9%80%81%E4%B8%9C%E9%98%B3%E9%A9%AC%E7%94%9F%E5%BA%8F/</loc>
+    <loc>https://xoctye.github.io/posts/%E9%80%81%E4%B8%9C%E9%98%B3%E9%A9%AC%E7%94%9F%E5%BA%8F/</loc>
     <lastmod>2024-10-11T13:46:34+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/</loc>
+    <loc>https://xoctye.github.io/tags/</loc>
   </url>
 </urlset>
