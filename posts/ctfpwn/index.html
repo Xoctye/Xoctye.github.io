@@ -21,7 +21,7 @@
       "articleSection" : "posts",
       "name" : "CTF竞赛权威指南PWN",
       "headline" : "CTF竞赛权威指南PWN",
-      "description" : "书籍 第一章 CTF：Capture The Flag 竞赛模式：解题模式（RE逆向工程、Pwn漏洞挖掘与利用、Web渗透、Crypto密码学、Mobile移动安全、Misc杂项） 、攻防模式、混合模式 著名赛事：DEFCON CTF、Pwn2Own、CGC、XCTF、强网杯、HITCON CTF、TCTF 网络安全会议：RSA、BlackHat、ISC 学术会议：CCS、NDSS、Oakland S\u0026amp;P(A)、USENIX(A)\n第二章 编译器的结构可分为前端和后端，前端是机器无关的，其功能是把源程序分解成组成要素和相应的语法结构，通过这个结构创建源程序的中间表示，同时搜集和源程序相关的信息，存放到符号表中；后端是及其相关的，其功能是根据中间表示和符号表信息构造目标程序。 GCC的编译主要分为四个阶段：预处理（-E）、编译（-S）、汇编（-c）、链接。 ELF(Executable and Linkable Format)格式是COFF格式的变种。 ELF文件分为三种类型：可执行文件（.EXEC）、可重定位文件（.REL）和共享目标文件（.DYN）； 通常目标文件都会包含代码（.text）、数据（.data）和BSS（.bss）三个节，BSS节用于保存未初始化的全局变量和局部静态变量。\n第三章 最先诞生的是复杂指令集计算机（CISC），典型代表就是x86处理器。 对于x86处理器而言，有三个最主要的操作模式：保护模式、实地址模式和系统管理模式,此外还有一个保护模式的子模式，称为虚拟8086模式。 x86汇编语言主要的语法风格有两种：AT\u0026amp;T风格和Intel风格。\n第四章 第五章 视频 漏洞分析与利用 漏洞是bug的一种。 \/\/栈溢出-临近变量淹没 #include\u0026lt;stdio.h\u0026gt; #include\u0026lt;string.h\u0026gt; #define PASSWORD \u0026#34;1234567\u0026#34; int verify_password(char* password) { int authenticated; char buffer[8]; authenticated = strcmp(password, PASSWORD); strcpy(buffer, password); \/\/输入 12345678 ，覆盖authenticated的值，返回0 return authenticated; } int main() { int valid_flag = 0; char password[1024]; while (1) { printf(\u0026#34;input:\u0026#34;); scanf(\u0026#34;%s\u0026#34;,password); valid_flag = verify_password(password); if (valid_flag) { printf(\u0026#34;error\\n\u0026#34;); } else { printf(\u0026#34;right\\n\u0026#34;); } } return 0; } 栈溢出-返回地址覆盖\n",
+      "description" : "书籍 第一章 CTF：Capture The Flag\n竞赛模式：解题模式（RE逆向工程、Pwn漏洞挖掘与利用、Web渗透、Crypto密码学、Mobile移动安全、Misc杂项）、攻防模式、混合模式\n著名赛事：DEFCON CTF、Pwn2Own、CGC、XCTF、强网杯、HITCON CTF、TCTF\n网络安全会议：RSA、BlackHat、ISC\n学术会议：CCS、NDSS、Oakland S\u0026amp;P(A)、USENIX(A)\n第二章 编译器的结构可分为前端和后端，前端是机器无关的，其功能是把源程序分解成组成要素和相应的语法结构，通过这个结构创建源程序的中间表示，同时搜集和源程序相关的信息，存放到符号表中；后端是及其相关的，其功能是根据中间表示和符号表信息构造目标程序。\nGCC的编译主要分为四个阶段：预处理（-E）、编译（-S）、汇编（-c）、链接。\nELF(Executable and Linkable Format)格式是COFF格式的变种。\nELF文件分为三种类型：可执行文件（.EXEC）、可重定位文件（.REL）和共享目标文件（.DYN）； 通常目标文件都会包含代码（.text）、数据（.data）和BSS（.bss）三个节，BSS节用于保存未初始化的全局变量和局部静态变量。\n第三章 最先诞生的是复杂指令集计算机（CISC），典型代表就是x86处理器。\n对于x86处理器而言，有三个最主要的操作模式：保护模式、实地址模式和系统管理模式,此外还有一个保护模式的子模式，称为虚拟8086模式。\nx86汇编语言主要的语法风格有两种：AT\u0026amp;T风格和Intel风格。\n第四章 第五章 视频 漏洞分析与利用 漏洞是bug的一种。 \/\/栈溢出-临近变量淹没 #include\u0026lt;stdio.h\u0026gt; #include\u0026lt;string.h\u0026gt; #define PASSWORD \u0026#34;1234567\u0026#34; int verify_password(char* password) { int authenticated; char buffer[8]; authenticated = strcmp(password, PASSWORD); strcpy(buffer, password); \/\/输入 12345678 ，覆盖authenticated的值，返回0 return authenticated; } int main() { int valid_flag = 0; char password[1024]; while (1) { printf(\u0026#34;input:\u0026#34;); scanf(\u0026#34;%s\u0026#34;,password); valid_flag = verify_password(password); if (valid_flag) { printf(\u0026#34;error\\n\u0026#34;); } else { printf(\u0026#34;right\\n\u0026#34;); } } return 0; } 栈溢出-返回地址覆盖\n",
       "inLanguage" : "en-US",
       "author" : "",
       "creator" : "",
@@ -38,14 +38,32 @@
 <title>CTF竞赛权威指南PWN</title>
   <meta property="og:title" content="CTF竞赛权威指南PWN" />
   <meta property="og:type" content="article" />
-  <meta property="og:description" content="书籍 第一章 CTF：Capture The Flag 竞赛模式：解题模式（RE逆向工程、Pwn漏洞挖掘与利用、Web渗透、Crypto密码学、Mobile移动安全、Misc杂项） 、攻防模式、混合模式 著名赛事：DEFCON CTF、Pwn2Own、CGC、XCTF、强网杯、HITCON CTF、TCTF 网络安全会议：RSA、BlackHat、ISC 学术会议：CCS、NDSS、Oakland S&amp;P(A)、USENIX(A)
-第二章 编译器的结构可分为前端和后端，前端是机器无关的，其功能是把源程序分解成组成要素和相应的语法结构，通过这个结构创建源程序的中间表示，同时搜集和源程序相关的信息，存放到符号表中；后端是及其相关的，其功能是根据中间表示和符号表信息构造目标程序。 GCC的编译主要分为四个阶段：预处理（-E）、编译（-S）、汇编（-c）、链接。 ELF(Executable and Linkable Format)格式是COFF格式的变种。 ELF文件分为三种类型：可执行文件（.EXEC）、可重定位文件（.REL）和共享目标文件（.DYN）； 通常目标文件都会包含代码（.text）、数据（.data）和BSS（.bss）三个节，BSS节用于保存未初始化的全局变量和局部静态变量。
-第三章 最先诞生的是复杂指令集计算机（CISC），典型代表就是x86处理器。 对于x86处理器而言，有三个最主要的操作模式：保护模式、实地址模式和系统管理模式,此外还有一个保护模式的子模式，称为虚拟8086模式。 x86汇编语言主要的语法风格有两种：AT&amp;T风格和Intel风格。
+  <meta property="og:description" content="书籍 第一章 CTF：Capture The Flag
+竞赛模式：解题模式（RE逆向工程、Pwn漏洞挖掘与利用、Web渗透、Crypto密码学、Mobile移动安全、Misc杂项）、攻防模式、混合模式
+著名赛事：DEFCON CTF、Pwn2Own、CGC、XCTF、强网杯、HITCON CTF、TCTF
+网络安全会议：RSA、BlackHat、ISC
+学术会议：CCS、NDSS、Oakland S&amp;P(A)、USENIX(A)
+第二章 编译器的结构可分为前端和后端，前端是机器无关的，其功能是把源程序分解成组成要素和相应的语法结构，通过这个结构创建源程序的中间表示，同时搜集和源程序相关的信息，存放到符号表中；后端是及其相关的，其功能是根据中间表示和符号表信息构造目标程序。
+GCC的编译主要分为四个阶段：预处理（-E）、编译（-S）、汇编（-c）、链接。
+ELF(Executable and Linkable Format)格式是COFF格式的变种。
+ELF文件分为三种类型：可执行文件（.EXEC）、可重定位文件（.REL）和共享目标文件（.DYN）； 通常目标文件都会包含代码（.text）、数据（.data）和BSS（.bss）三个节，BSS节用于保存未初始化的全局变量和局部静态变量。
+第三章 最先诞生的是复杂指令集计算机（CISC），典型代表就是x86处理器。
+对于x86处理器而言，有三个最主要的操作模式：保护模式、实地址模式和系统管理模式,此外还有一个保护模式的子模式，称为虚拟8086模式。
+x86汇编语言主要的语法风格有两种：AT&amp;T风格和Intel风格。
 第四章 第五章 视频 漏洞分析与利用 漏洞是bug的一种。 //栈溢出-临近变量淹没 #include&lt;stdio.h&gt; #include&lt;string.h&gt; #define PASSWORD &#34;1234567&#34; int verify_password(char* password) { int authenticated; char buffer[8]; authenticated = strcmp(password, PASSWORD); strcpy(buffer, password); //输入 12345678 ，覆盖authenticated的值，返回0 return authenticated; } int main() { int valid_flag = 0; char password[1024]; while (1) { printf(&#34;input:&#34;); scanf(&#34;%s&#34;,password); valid_flag = verify_password(password); if (valid_flag) { printf(&#34;error\n&#34;); } else { printf(&#34;right\n&#34;); } } return 0; } 栈溢出-返回地址覆盖
 " />
-  <meta name="description" content="书籍 第一章 CTF：Capture The Flag 竞赛模式：解题模式（RE逆向工程、Pwn漏洞挖掘与利用、Web渗透、Crypto密码学、Mobile移动安全、Misc杂项） 、攻防模式、混合模式 著名赛事：DEFCON CTF、Pwn2Own、CGC、XCTF、强网杯、HITCON CTF、TCTF 网络安全会议：RSA、BlackHat、ISC 学术会议：CCS、NDSS、Oakland S&amp;P(A)、USENIX(A)
-第二章 编译器的结构可分为前端和后端，前端是机器无关的，其功能是把源程序分解成组成要素和相应的语法结构，通过这个结构创建源程序的中间表示，同时搜集和源程序相关的信息，存放到符号表中；后端是及其相关的，其功能是根据中间表示和符号表信息构造目标程序。 GCC的编译主要分为四个阶段：预处理（-E）、编译（-S）、汇编（-c）、链接。 ELF(Executable and Linkable Format)格式是COFF格式的变种。 ELF文件分为三种类型：可执行文件（.EXEC）、可重定位文件（.REL）和共享目标文件（.DYN）； 通常目标文件都会包含代码（.text）、数据（.data）和BSS（.bss）三个节，BSS节用于保存未初始化的全局变量和局部静态变量。
-第三章 最先诞生的是复杂指令集计算机（CISC），典型代表就是x86处理器。 对于x86处理器而言，有三个最主要的操作模式：保护模式、实地址模式和系统管理模式,此外还有一个保护模式的子模式，称为虚拟8086模式。 x86汇编语言主要的语法风格有两种：AT&amp;T风格和Intel风格。
+  <meta name="description" content="书籍 第一章 CTF：Capture The Flag
+竞赛模式：解题模式（RE逆向工程、Pwn漏洞挖掘与利用、Web渗透、Crypto密码学、Mobile移动安全、Misc杂项）、攻防模式、混合模式
+著名赛事：DEFCON CTF、Pwn2Own、CGC、XCTF、强网杯、HITCON CTF、TCTF
+网络安全会议：RSA、BlackHat、ISC
+学术会议：CCS、NDSS、Oakland S&amp;P(A)、USENIX(A)
+第二章 编译器的结构可分为前端和后端，前端是机器无关的，其功能是把源程序分解成组成要素和相应的语法结构，通过这个结构创建源程序的中间表示，同时搜集和源程序相关的信息，存放到符号表中；后端是及其相关的，其功能是根据中间表示和符号表信息构造目标程序。
+GCC的编译主要分为四个阶段：预处理（-E）、编译（-S）、汇编（-c）、链接。
+ELF(Executable and Linkable Format)格式是COFF格式的变种。
+ELF文件分为三种类型：可执行文件（.EXEC）、可重定位文件（.REL）和共享目标文件（.DYN）； 通常目标文件都会包含代码（.text）、数据（.data）和BSS（.bss）三个节，BSS节用于保存未初始化的全局变量和局部静态变量。
+第三章 最先诞生的是复杂指令集计算机（CISC），典型代表就是x86处理器。
+对于x86处理器而言，有三个最主要的操作模式：保护模式、实地址模式和系统管理模式,此外还有一个保护模式的子模式，称为虚拟8086模式。
+x86汇编语言主要的语法风格有两种：AT&amp;T风格和Intel风格。
 第四章 第五章 视频 漏洞分析与利用 漏洞是bug的一种。 //栈溢出-临近变量淹没 #include&lt;stdio.h&gt; #include&lt;string.h&gt; #define PASSWORD &#34;1234567&#34; int verify_password(char* password) { int authenticated; char buffer[8]; authenticated = strcmp(password, PASSWORD); strcpy(buffer, password); //输入 12345678 ，覆盖authenticated的值，返回0 return authenticated; } int main() { int valid_flag = 0; char password[1024]; while (1) { printf(&#34;input:&#34;); scanf(&#34;%s&#34;,password); valid_flag = verify_password(password); if (valid_flag) { printf(&#34;error\n&#34;); } else { printf(&#34;right\n&#34;); } } return 0; } 栈溢出-返回地址覆盖
 " />
   <meta property="og:locale" content="cn" /><meta property="og:image" content="" />
@@ -129,23 +147,22 @@
           
           <h1 id="书籍">书籍</h1>
 <h2 id="第一章">第一章</h2>
-<p>CTF：Capture The Flag
-竞赛模式：解题模式（RE逆向工程、Pwn漏洞挖掘与利用、Web渗透、Crypto密码学、Mobile移动安全、Misc杂项）
-、攻防模式、混合模式
-著名赛事：DEFCON CTF、Pwn2Own、CGC、XCTF、强网杯、HITCON CTF、TCTF
-网络安全会议：RSA、BlackHat、ISC
+<p>CTF：Capture The Flag<br>
+竞赛模式：解题模式（RE逆向工程、Pwn漏洞挖掘与利用、Web渗透、Crypto密码学、Mobile移动安全、Misc杂项）、攻防模式、混合模式<br>
+著名赛事：DEFCON CTF、Pwn2Own、CGC、XCTF、强网杯、HITCON CTF、TCTF<br>
+网络安全会议：RSA、BlackHat、ISC<br>
 学术会议：CCS、NDSS、Oakland S&amp;P(A)、USENIX(A)</p>
 <hr>
 <h2 id="第二章">第二章</h2>
-<p>编译器的结构可分为前端和后端，前端是机器无关的，其功能是把源程序分解成组成要素和相应的语法结构，通过这个结构创建源程序的中间表示，同时搜集和源程序相关的信息，存放到符号表中；后端是及其相关的，其功能是根据中间表示和符号表信息构造目标程序。
-GCC的编译主要分为四个阶段：预处理（-E）、编译（-S）、汇编（-c）、链接。
-ELF(Executable and Linkable Format)格式是COFF格式的变种。
+<p>编译器的结构可分为前端和后端，前端是机器无关的，其功能是把源程序分解成组成要素和相应的语法结构，通过这个结构创建源程序的中间表示，同时搜集和源程序相关的信息，存放到符号表中；后端是及其相关的，其功能是根据中间表示和符号表信息构造目标程序。<br>
+GCC的编译主要分为四个阶段：预处理（-E）、编译（-S）、汇编（-c）、链接。<br>
+ELF(Executable and Linkable Format)格式是COFF格式的变种。<br>
 ELF文件分为三种类型：可执行文件（.EXEC）、可重定位文件（.REL）和共享目标文件（.DYN）；
 通常目标文件都会包含代码（.text）、数据（.data）和BSS（.bss）三个节，BSS节用于保存未初始化的全局变量和局部静态变量。</p>
 <hr>
 <h2 id="第三章">第三章</h2>
-<p>最先诞生的是复杂指令集计算机（CISC），典型代表就是x86处理器。
-对于x86处理器而言，有三个最主要的操作模式：保护模式、实地址模式和系统管理模式,此外还有一个保护模式的子模式，称为虚拟8086模式。
+<p>最先诞生的是复杂指令集计算机（CISC），典型代表就是x86处理器。<br>
+对于x86处理器而言，有三个最主要的操作模式：保护模式、实地址模式和系统管理模式,此外还有一个保护模式的子模式，称为虚拟8086模式。<br>
 x86汇编语言主要的语法风格有两种：AT&amp;T风格和Intel风格。</p>
 <hr>
 <h2 id="第四章">第四章</h2>
@@ -229,9 +246,9 @@ x86汇编语言主要的语法风格有两种：AT&amp;T风格和Intel风格。<
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>    fclose(fp);
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>函数代码在栈中保存顺序：
-buffer
-前栈帧EBP
+</span></span></code></pre></div><p>函数代码在栈中保存顺序：<br>
+buffer<br>
+前栈帧EBP<br>
 返回地址
 ESP</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//寻找jmp esp
@@ -538,35 +555,32 @@ ESP</p>
       </tr>
   </tbody>
 </table>
-<p>windows堆分配
+<p>windows堆分配<br>
 通过堆，内存管理器将一块较大的内存空间委托给堆管理器来管理；</p>
 <ul>
-<li>用户态
-小内存：堆管理器分配堆，调用堆分配API从堆管理器分配堆，堆分配API包括LocalAlloc、GlobalAlloc、HeapAlloc、malloc等；</li>
-</ul>
-<p>大内存：内存管理器分配堆，调用虚拟内存分配API来从内存管理器分配内存，虚拟内存API包括VirtualAlloc、VirtualAllocEx、VirtualFree、VirtualFreeEx、VirtualLock、VirtualUnload、VirtualPotect、VirtualQuery等；</p>
-<ul>
-<li>内核态
-小内存：池管理器（Pool Manager）。池管理器公开了一组驱动程序接口以向外提供服务，包括ExAllocatePool、ExAllocatePoolwithTag、ExAllocatePoolWithTagPriority、ExAllocatePoolwithQuota、ExFessPool、ExFreePoolwithTag等；
+<li>用户态<br>
+小内存：堆管理器分配堆，调用堆分配API从堆管理器分配堆，堆分配API包括LocalAlloc<br>
+GlobalAlloc、HeapAlloc、malloc等；<br>
+大内存：内存管理器分配堆，调用虚拟内存分配API来从内存管理器分配内存，虚拟内存API包括VirtualAlloc、VirtualAllocEx、VirtualFree、VirtualFreeEx、VirtualLock、VirtualUnload、VirtualPotect、VirtualQuery等；</li>
+<li>内核态<br>
+小内存：池管理器（Pool Manager）。池管理器公开了一组驱动程序接口以向外提供服务，包括ExAllocatePool、ExAllocatePoolwithTag、ExAllocatePoolWithTagPriority、ExAllocatePoolwithQuota、ExFessPool、ExFreePoolwithTag等；<br>
 大内存：内存管理器分配虚拟内存，内核对应的API包括NtAllocatevirtualMemory、NtProtectvirtualMemory等；
 <img src="/images/pwn0006.png" alt="">
-程序中对堆的直接操作主要有三种：
-1、进程默认堆：每个进程启动的时候系统会创建一个默认堆，LocalAlloc、GlobalAlloc是从进程默认堆上分配内存；也可以使用GetProcessHeap获取进程默认堆的句柄；然后根据用这个句柄去调用HeapAlloc达到在系统默认堆上分配内存的效果；
-2、C++编程中常用的是malloc和new去申请内存，这些由CRT库提供方法。在VS2010之前(包含)，CRT库会使用HeapCreate去创建一个堆，供CRT库自己使用。在VS2015以后CRT库的实现，并不会再去创建一个单独的堆，而使用进程默认堆。
+程序中对堆的直接操作主要有三种：<br>
+1、进程默认堆：每个进程启动的时候系统会创建一个默认堆，LocalAlloc、GlobalAlloc是从进程默认堆上分配内存；也可以使用GetProcessHeap获取进程默认堆的句柄；然后根据用这个句柄去调用HeapAlloc达到在系统默认堆上分配内存的效果；<br>
+2、C++编程中常用的是malloc和new去申请内存，这些由CRT库提供方法。在VS2010之前(包含)，CRT库会使用HeapCreate去创建一个堆，供CRT库自己使用。在VS2015以后CRT库的实现，并不会再去创建一个单独的堆，而使用进程默认堆。<br>
 3、自建堆。这个泛指程序通过HeapCreate去创建的堆，然后利用HeapAlloc等API去操作堆，比如申请空间；
-<img src="/images/pwn0005.png" alt="">
-为了支持C的内存分配函数和C++的内存分配运算符（new和delete，即CRT内存分配函数），编译器的C运行库会创建一个专门的堆供这些函数使用，即CRT堆。</li>
+<img src="/images/pwn0005.png" alt=""></li>
 </ul>
-<p>进程默认堆
+<p>为了支持C的内存分配函数和C++的内存分配运算符（new和delete，即CRT内存分配函数），编译器的C运行库会创建一个专门的堆供这些函数使用，即CRT堆。</p>
+<p>进程默认堆<br>
 创建进程时操作系统为进程创建的默认堆：ntdll! KiUserApcDispather-&gt; ntdll! LdrpInitialize-&gt; ntdll! LdrplInitializeProcess-&gt; ntdll! RtlCreateHeap
-创建好的堆的句柄保存在PEB结构的ProcessHeap字段中;</p>
-<ul>
-<li>私有堆
-可以通过HeapCreate这个api来创建属于进程的私有堆，这个api实际上会调用RtlCreateHeap函数，创建完毕之后会将创建好的堆句柄保存到peb结构中。
+创建好的堆的句柄保存在PEB结构的ProcessHeap字段中;<br>
+私有堆<br>
+可以通过HeapCreate这个api来创建属于进程的私有堆，这个api实际上会调用RtlCreateHeap函数，创建完毕之后会将创建好的堆句柄保存到peb结构中。<br>
 HeapCreate-&gt; ntdll!RtlCreateHeap-&gt; NtAllocateVirtualMemory
 <a href="https://www.cnblogs.com/XiuzhuKirakira/p/17993207">Windows 堆管理机制 [1] 堆基础</a>
-<a href="https://www.bilibili.com/video/BV13cBXYqE2m?t=103.7&amp;p=32">https://www.bilibili.com/video/BV13cBXYqE2m?t=103.7&p=32</a></li>
-</ul>
+<a href="https://www.bilibili.com/video/BV13cBXYqE2m?t=103.7&amp;p=32">https://www.bilibili.com/video/BV13cBXYqE2m?t=103.7&p=32</a></p>
 
         </div>
 
