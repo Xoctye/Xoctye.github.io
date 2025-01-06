@@ -21,7 +21,7 @@
       "articleSection" : "posts",
       "name" : "内核原理",
       "headline" : "内核原理",
-      "description" : "海哥\/火哥\/周壑内核 保护模式 #include\u0026lt;ntifs.h\u0026gt; VOID DriverUnload(PDRIVER_OBJECT pDriver) { } NTSTATUS DriverEntry(PDRIVER_OBJECT pDriver,PUNICODE_STRING pReg) { pDriver-\u0026gt;DriverUnload=DriverUnload; return STATUS_SUCCESS; } CPU的两种架构：RISC（arm）、CISC(x86) \u0026ldquo;几乎所有的冯·诺伊曼型计算机的CPU，其工作都可以分为5个阶段：取指令、指令译码、访存取数、执行指令、结果写回\u0026rdquo; 增量链接\n\/\/裸函数 void __declspec(naked) fn(){} 羽夏看Win系统内核——简述\n\/\/以下很多内容选自“羽夏的博客” 相关主页：https:\/\/www.cnblogs.com\/wingsummer CPU的三个模式：实模式、保护模式（保护内存非法访问和特权指令的使用）、虚拟8086模式 段寄存器有这几个：ES、CS、SS、DS、FS、GS、LDTR、TR，它们各有自己特殊的用途。 Mov指令：MOV AX,ES，但只能读16位的可见部分；MOV DS,AX写段寄存器，写的是96位。 读写LDTR的指令为：SLDT\/LLDT 读写TR的指令为：STR\/LTR \/\/注意在学习保护模式的时候不要把操作系统的概念扯进去，还没到操作系统层面 GDT：全局描述符表 LDT：局部描述符表 寄存器GDTR（48位）存储了GDT表的位置和大小 r gdtr \/\/读取GDT表地址 r gdtl \/\/读取GDT表的大小 dq 8003f000 l30 \/\/0x8003f000为GDT表的地址(0x30=48) 段选择子、段描述符拆解分析 CPL：CPU当前的权限级别 DPL：如果你想访问我，你应该具备什么样的权限（CPL） RPL：用什么权限去访问一个段 对于一致代码段，也称为共享段： 特权级高的程序不允许访问特权级低的数据：核心态不允许访问用户态的数据 特权级低的程序可以访问到特权级高的数据，但特权级不会改变：用户态还是用户态 对于非一致代码段： 只允许同级访问 绝对禁止不同级别的访问：核心态不是用户态，用户态也不是核心态 \/\/代码段间跳转的执行流程 1、段选择子拆分 2、查表得到段描述符 3、权限检查 4、加载段描述符 5、代码执行 ",
+      "description" : "海哥\/火哥\/周壑内核\/麦洛科菲\/科锐 麦洛科菲系统安全高级班 高质量C\/C\u002b\u002b编程指南 C语言中 \u0026ldquo;%z\u0026rdquo; 的使用；\n\/\/格式化描述符的安全性问题 \/\/printf的安全性问题：栈上内存泄露，内存被修改(%n) #include \u0026lt;stdio.h\u0026gt; void MyPrint(char* buf) { printf(\u0026#34;%s\\n\u0026#34;,buf); printf(buf); } int main() { MyPrint((char*)\u0026#34;hello\u0026#34;); printf(\u0026#34;\\n\u0026#34;); MyPrint((char*)\u0026#34;%x\u0026#34;); return 0; } main函数的问题 \/\/先于main()执行 #include\u0026lt;stdio.h\u0026gt; #include\u0026lt;windows.h\u0026gt; int before_main1() { printf(\u0026#34;before_main1()\\n\u0026#34;); return 0; } int before_main2() { printf(\u0026#34;before_main2()\\n\u0026#34;); return 0; } int after_main() { printf(\u0026#34;after_main()\\n\u0026#34;); return 0; } typedef int func(); #pragma data_seg(\u0026#34;.CRT$XIU\u0026#34;) static func* before1[] = { before_main1 }; #pragma data_seg(\u0026#34;.CRT$XCU\u0026#34;) static func* before2[] = { before_main2 }; #pragma data_seg() int main() { _onexit(after_main); printf(\u0026#34;helloworld\\n\u0026#34;); return 0; } sizeof 和函数的区别：使用 sizeof 在编译阶段就能确定，使用函数需要在运行阶段才能确定\n",
       "inLanguage" : "en-US",
       "author" : "",
       "creator" : "",
@@ -38,12 +38,12 @@
 <title>内核原理</title>
   <meta property="og:title" content="内核原理" />
   <meta property="og:type" content="article" />
-  <meta property="og:description" content="海哥/火哥/周壑内核 保护模式 #include&lt;ntifs.h&gt; VOID DriverUnload(PDRIVER_OBJECT pDriver) { } NTSTATUS DriverEntry(PDRIVER_OBJECT pDriver,PUNICODE_STRING pReg) { pDriver-&gt;DriverUnload=DriverUnload; return STATUS_SUCCESS; } CPU的两种架构：RISC（arm）、CISC(x86) &ldquo;几乎所有的冯·诺伊曼型计算机的CPU，其工作都可以分为5个阶段：取指令、指令译码、访存取数、执行指令、结果写回&rdquo; 增量链接
-//裸函数 void __declspec(naked) fn(){} 羽夏看Win系统内核——简述
-//以下很多内容选自“羽夏的博客” 相关主页：https://www.cnblogs.com/wingsummer CPU的三个模式：实模式、保护模式（保护内存非法访问和特权指令的使用）、虚拟8086模式 段寄存器有这几个：ES、CS、SS、DS、FS、GS、LDTR、TR，它们各有自己特殊的用途。 Mov指令：MOV AX,ES，但只能读16位的可见部分；MOV DS,AX写段寄存器，写的是96位。 读写LDTR的指令为：SLDT/LLDT 读写TR的指令为：STR/LTR //注意在学习保护模式的时候不要把操作系统的概念扯进去，还没到操作系统层面 GDT：全局描述符表 LDT：局部描述符表 寄存器GDTR（48位）存储了GDT表的位置和大小 r gdtr //读取GDT表地址 r gdtl //读取GDT表的大小 dq 8003f000 l30 //0x8003f000为GDT表的地址(0x30=48) 段选择子、段描述符拆解分析 CPL：CPU当前的权限级别 DPL：如果你想访问我，你应该具备什么样的权限（CPL） RPL：用什么权限去访问一个段 对于一致代码段，也称为共享段： 特权级高的程序不允许访问特权级低的数据：核心态不允许访问用户态的数据 特权级低的程序可以访问到特权级高的数据，但特权级不会改变：用户态还是用户态 对于非一致代码段： 只允许同级访问 绝对禁止不同级别的访问：核心态不是用户态，用户态也不是核心态 //代码段间跳转的执行流程 1、段选择子拆分 2、查表得到段描述符 3、权限检查 4、加载段描述符 5、代码执行 " />
-  <meta name="description" content="海哥/火哥/周壑内核 保护模式 #include&lt;ntifs.h&gt; VOID DriverUnload(PDRIVER_OBJECT pDriver) { } NTSTATUS DriverEntry(PDRIVER_OBJECT pDriver,PUNICODE_STRING pReg) { pDriver-&gt;DriverUnload=DriverUnload; return STATUS_SUCCESS; } CPU的两种架构：RISC（arm）、CISC(x86) &ldquo;几乎所有的冯·诺伊曼型计算机的CPU，其工作都可以分为5个阶段：取指令、指令译码、访存取数、执行指令、结果写回&rdquo; 增量链接
-//裸函数 void __declspec(naked) fn(){} 羽夏看Win系统内核——简述
-//以下很多内容选自“羽夏的博客” 相关主页：https://www.cnblogs.com/wingsummer CPU的三个模式：实模式、保护模式（保护内存非法访问和特权指令的使用）、虚拟8086模式 段寄存器有这几个：ES、CS、SS、DS、FS、GS、LDTR、TR，它们各有自己特殊的用途。 Mov指令：MOV AX,ES，但只能读16位的可见部分；MOV DS,AX写段寄存器，写的是96位。 读写LDTR的指令为：SLDT/LLDT 读写TR的指令为：STR/LTR //注意在学习保护模式的时候不要把操作系统的概念扯进去，还没到操作系统层面 GDT：全局描述符表 LDT：局部描述符表 寄存器GDTR（48位）存储了GDT表的位置和大小 r gdtr //读取GDT表地址 r gdtl //读取GDT表的大小 dq 8003f000 l30 //0x8003f000为GDT表的地址(0x30=48) 段选择子、段描述符拆解分析 CPL：CPU当前的权限级别 DPL：如果你想访问我，你应该具备什么样的权限（CPL） RPL：用什么权限去访问一个段 对于一致代码段，也称为共享段： 特权级高的程序不允许访问特权级低的数据：核心态不允许访问用户态的数据 特权级低的程序可以访问到特权级高的数据，但特权级不会改变：用户态还是用户态 对于非一致代码段： 只允许同级访问 绝对禁止不同级别的访问：核心态不是用户态，用户态也不是核心态 //代码段间跳转的执行流程 1、段选择子拆分 2、查表得到段描述符 3、权限检查 4、加载段描述符 5、代码执行 " />
+  <meta property="og:description" content="海哥/火哥/周壑内核/麦洛科菲/科锐 麦洛科菲系统安全高级班 高质量C/C&#43;&#43;编程指南 C语言中 &ldquo;%z&rdquo; 的使用；
+//格式化描述符的安全性问题 //printf的安全性问题：栈上内存泄露，内存被修改(%n) #include &lt;stdio.h&gt; void MyPrint(char* buf) { printf(&#34;%s\n&#34;,buf); printf(buf); } int main() { MyPrint((char*)&#34;hello&#34;); printf(&#34;\n&#34;); MyPrint((char*)&#34;%x&#34;); return 0; } main函数的问题 //先于main()执行 #include&lt;stdio.h&gt; #include&lt;windows.h&gt; int before_main1() { printf(&#34;before_main1()\n&#34;); return 0; } int before_main2() { printf(&#34;before_main2()\n&#34;); return 0; } int after_main() { printf(&#34;after_main()\n&#34;); return 0; } typedef int func(); #pragma data_seg(&#34;.CRT$XIU&#34;) static func* before1[] = { before_main1 }; #pragma data_seg(&#34;.CRT$XCU&#34;) static func* before2[] = { before_main2 }; #pragma data_seg() int main() { _onexit(after_main); printf(&#34;helloworld\n&#34;); return 0; } sizeof 和函数的区别：使用 sizeof 在编译阶段就能确定，使用函数需要在运行阶段才能确定
+" />
+  <meta name="description" content="海哥/火哥/周壑内核/麦洛科菲/科锐 麦洛科菲系统安全高级班 高质量C/C&#43;&#43;编程指南 C语言中 &ldquo;%z&rdquo; 的使用；
+//格式化描述符的安全性问题 //printf的安全性问题：栈上内存泄露，内存被修改(%n) #include &lt;stdio.h&gt; void MyPrint(char* buf) { printf(&#34;%s\n&#34;,buf); printf(buf); } int main() { MyPrint((char*)&#34;hello&#34;); printf(&#34;\n&#34;); MyPrint((char*)&#34;%x&#34;); return 0; } main函数的问题 //先于main()执行 #include&lt;stdio.h&gt; #include&lt;windows.h&gt; int before_main1() { printf(&#34;before_main1()\n&#34;); return 0; } int before_main2() { printf(&#34;before_main2()\n&#34;); return 0; } int after_main() { printf(&#34;after_main()\n&#34;); return 0; } typedef int func(); #pragma data_seg(&#34;.CRT$XIU&#34;) static func* before1[] = { before_main1 }; #pragma data_seg(&#34;.CRT$XCU&#34;) static func* before2[] = { before_main2 }; #pragma data_seg() int main() { _onexit(after_main); printf(&#34;helloworld\n&#34;); return 0; } sizeof 和函数的区别：使用 sizeof 在编译阶段就能确定，使用函数需要在运行阶段才能确定
+" />
   <meta property="og:locale" content="cn" /><meta property="og:image" content="" />
   
 
@@ -128,8 +128,577 @@
 
         <div class="post-content markdown-body">
           
-          <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="">海哥</span>/<span style="">火哥</span>/<span style="">周壑内核</span>
-</span></span></code></pre></div><h1 id="保护模式">保护模式</h1>
+          <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="">海哥</span>/<span style="">火哥</span>/<span style="">周壑内核</span>/<span style="">麦洛科菲</span>/<span style="">科锐</span>
+</span></span></code></pre></div><h1 id="麦洛科菲系统安全高级班">麦洛科菲系统安全高级班</h1>
+<p><img src="/images/kl0001.jpg" alt="">
+<img src="/images/kl0002.png" alt="">
+<img src="/images/kl0003.png" alt="">
+<a href="https://github.com/Xoctye/MISC/blob/main/%E9%AB%98%E8%B4%A8%E9%87%8FC%2B%2B%E7%BC%96%E7%A8%8B%E6%8C%87%E5%8D%97.pdf">高质量C/C++编程指南</a>
+C语言中 &ldquo;%z&rdquo; 的使用；</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//格式化描述符的安全性问题
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic">//printf的安全性问题：栈上内存泄露，内存被修改(%n)
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include</span> <span style="">&lt;stdio.h&gt;</span><span style="">
+</span></span></span><span style="display:flex;"><span><span style=""></span><span style="">void</span> MyPrint(<span style="">char</span>* buf)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    printf(<span style="font-style:italic">&#34;%s</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>,buf);
+</span></span><span style="display:flex;"><span>    printf(buf);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">int</span> main() {
+</span></span><span style="display:flex;"><span>    MyPrint((<span style="">char</span>*)<span style="font-style:italic">&#34;hello&#34;</span>);
+</span></span><span style="display:flex;"><span>    printf(<span style="font-style:italic">&#34;</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>    MyPrint((<span style="">char</span>*)<span style="font-style:italic">&#34;%x&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><img src="/images/kl0004.png" alt=""></p>
+<p>main函数的问题
+<img src="/images/kl0005.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//先于main()执行
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include&lt;stdio.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="">#include&lt;windows.h&gt;
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="">int</span> before_main1()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	printf(<span style="font-style:italic">&#34;before_main1()</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">int</span> before_main2()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	printf(<span style="font-style:italic">&#34;before_main2()</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">int</span> after_main()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	printf(<span style="font-style:italic">&#34;after_main()</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">typedef</span> <span style="">int</span> func();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">#pragma data_seg(&#34;.CRT$XIU&#34;)
+</span></span></span><span style="display:flex;"><span><span style=""></span><span style="font-weight:bold">static</span> func* before1[] = { before_main1 };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">#pragma data_seg(&#34;.CRT$XCU&#34;)
+</span></span></span><span style="display:flex;"><span><span style=""></span><span style="font-weight:bold">static</span> func* before2[] = { before_main2 };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">#pragma data_seg()
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="">int</span> main()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	_onexit(after_main);
+</span></span><span style="display:flex;"><span>	printf(<span style="font-style:italic">&#34;helloworld</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><img src="/images/kl0006.png" alt="">
+sizeof 和函数的区别：使用 sizeof 在编译阶段就能确定，使用函数需要在运行阶段才能确定</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//结构体对齐、栈对齐
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic">//为啥要对齐：CPU读取数据更快
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic">//指定对齐大小：#pragma pack(1)
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="font-weight:bold">typedef</span> <span style="font-weight:bold">struct</span> <span style="font-weight:bold">x</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	<span style="">char</span> a;
+</span></span><span style="display:flex;"><span>	<span style="">long</span> b;
+</span></span><span style="display:flex;"><span>	<span style="">char</span> c;
+</span></span><span style="display:flex;"><span>	<span style="">double</span> d;
+</span></span><span style="display:flex;"><span>}x;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">typedef</span> <span style="font-weight:bold">struct</span> <span style="font-weight:bold">y</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	<span style="">char</span> a;
+</span></span><span style="display:flex;"><span>	<span style="">char</span> c;
+</span></span><span style="display:flex;"><span>	<span style="">long</span> b;
+</span></span><span style="display:flex;"><span>	<span style="">double</span> d;
+</span></span><span style="display:flex;"><span>}y;
+</span></span><span style="display:flex;"><span><span style="">int</span> main()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	printf(<span style="font-style:italic">&#34;%d</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>, <span style="font-weight:bold">sizeof</span>(x));
+</span></span><span style="display:flex;"><span>	printf(<span style="font-style:italic">&#34;%d</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>, <span style="font-weight:bold">sizeof</span>(y));
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><img src="/images/kl0008.png" alt="">
+<img src="/images/kl0009.png" alt="">
+<img src="/images/kl0011.png" alt="">
+<img src="/images/kl0012.png" alt="">
+<a href="https://www.cnblogs.com/liloke/archive/2011/12/01/2270850.html">内存寻址的三种模型</a></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="">虚拟内存地址</span>(VA)=<span style="">装载地址</span>(ImageBase)+<span style="">节偏移</span>+<span style="">文件偏移地址</span>
+</span></span><span style="display:flex;"><span><span style="">相对虚拟地址</span>(RVA)=VA-ImageBase
+</span></span><span style="display:flex;"><span>VOffset<span style="">：</span>VA节起始地址相对与ImageBase的偏移量
+</span></span><span style="display:flex;"><span>ROffset<span style="">：</span>PointerToRawData节起始地址对于文件起始位置的偏移量
+</span></span></code></pre></div><p><a href="https://www.cnblogs.com/Reverse-xiaoyu/p/11618739.html">调用约定</a></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>thiscall是C++<span style="">类成员函数缺省的调用约定，但它没有显示的声明形式。</span>thiscall意味着<span style="">：</span>
+</span></span><span style="display:flex;"><span><span style="">参数入栈：参数从右向左入栈</span>
+</span></span><span style="display:flex;"><span>this指针入栈<span style="">：如果参数个数确定，</span>this指针通过ecx传递给被调用者<span style="">；如果参数个数不确定，</span>this指针在所有参数压栈后被压入堆栈<span style="">。</span>
+</span></span><span style="display:flex;"><span><span style="">堆栈恢复：对参数个数不定的，调用者清理堆栈，否则函数自己清理堆栈。</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>x64与x86的fastcall的区别<span style="">：</span>
+</span></span><span style="display:flex;"><span>1<span style="">，比</span>ecx(rcx),edx(rdx)<span style="">寄存器多了</span>2<span style="">个</span>r8,r9
+</span></span><span style="display:flex;"><span>2<span style="">，参数入栈，会对齐到</span>8<span style="">个字节</span>
+</span></span><span style="display:flex;"><span>3<span style="">，函数的前</span>4<span style="">个参数存放到了</span>rcx,rdx,r8,r9四个寄存器中<span style="">，但在栈上也会预留</span>4<span style="">个空间</span>
+</span></span><span style="display:flex;"><span>4<span style="">，调用者来负责栈的平衡</span>
+</span></span></code></pre></div><p><a href="https://www.xlasm.com/notebook/window_driver/vs2022%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">驱动开发环境搭建</a></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//作业
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>1<span style="">、计算一个整数的二进制中有多少个</span> 1<span style="">。如</span> 10 <span style="">的二进制为</span> 1010<span style="">，所以有</span> 2 <span style="">个</span> 1<span style="">。</span>
+</span></span><span style="display:flex;"><span>2<span style="">、请设计一个函数，把十进制的正整数转化为三十六进制字符串。三十六进制的规则为</span> <span style="">“</span>0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<span style="">”。比如：</span>1=<span style="">“</span>0001<span style="">”，</span>10=<span style="">“</span>000A<span style="">”，</span>20=<span style="">“</span>000K<span style="">”，</span>35=<span style="">“</span>000Z<span style="">”，</span>36=<span style="">“</span>0010<span style="">”；</span>
+</span></span><span style="display:flex;"><span>3<span style="">、判断一个平台是低位优先还是高位优先；</span>
+</span></span><span style="display:flex;"><span>4<span style="">、改变一个整数的存储方式</span> (0x12345678 0x78563412)<span style="">；</span>
+</span></span><span style="display:flex;"><span>5<span style="">、将一个字符串按照单词逆置，如”</span>hello world<span style="">”</span> <span style="">“</span>world hello<span style="">”；</span>
+</span></span><span style="display:flex;"><span>6<span style="">、将一个字符串，左旋</span> N <span style="">个字符。如左旋</span> 3 <span style="">个字符：”</span>hello world<span style="">”</span> <span style="">“</span>lo worldhel<span style="">”；</span>
+</span></span><span style="display:flex;"><span>7<span style="">、通过异或实现一个只带一个指针域的双向链表；</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//1、计算一个整数的二进制中有多少个 1。如 10 的二进制为 1010，所以有 2 个 1。
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic">//Brian Kernighan 算法
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include</span> <span style="">&lt;stdio.h&gt;</span><span style="">
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="">int</span> countOnes(<span style="">int</span> num) {
+</span></span><span style="display:flex;"><span>    <span style="">int</span> count = 0;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">while</span> (num) {
+</span></span><span style="display:flex;"><span>        num &amp;= (num - 1);
+</span></span><span style="display:flex;"><span>        count++;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">return</span> count;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">int</span> main() {
+</span></span><span style="display:flex;"><span>    <span style="">int</span> number;
+</span></span><span style="display:flex;"><span>    printf(<span style="font-style:italic">&#34;请输入一个整数: &#34;</span>);
+</span></span><span style="display:flex;"><span>    scanf(<span style="font-style:italic">&#34;%d&#34;</span>, &amp;number);
+</span></span><span style="display:flex;"><span>    <span style="">int</span> result = countOnes(number);
+</span></span><span style="display:flex;"><span>    printf(<span style="font-style:italic">&#34;该整数的二进制表示中有 %d 个1</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>, result);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//2、请设计一个函数，把十进制的正整数转化为三十六进制字符串。
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include</span> <span style="">&lt;stdio.h&gt;</span><span style="">
+</span></span></span><span style="display:flex;"><span><span style="">#include</span> <span style="">&lt;string.h&gt;</span><span style="">
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="font-style:italic">// 将十进制数转换为三十六进制字符串
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">void</span> decimalToBase36(<span style="">int</span> decimal, <span style="">char</span>* result) {
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">const</span> <span style="">char</span> base36Digits[] = <span style="font-style:italic">&#34;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="">int</span> index = 3;
+</span></span><span style="display:flex;"><span>    result[4] = <span style="font-style:italic">&#39;\0&#39;</span>;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">while</span> (decimal &gt; 0 &amp;&amp; index &gt;= 0) {
+</span></span><span style="display:flex;"><span>        result[index--] = base36Digits[decimal % 36];
+</span></span><span style="display:flex;"><span>        decimal /= 36;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">while</span> (index &gt;= 0) {
+</span></span><span style="display:flex;"><span>        result[index--] = <span style="font-style:italic">&#39;0&#39;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">int</span> main() {
+</span></span><span style="display:flex;"><span>    <span style="">int</span> decimal;
+</span></span><span style="display:flex;"><span>    <span style="">char</span> result[5];
+</span></span><span style="display:flex;"><span>    printf(<span style="font-style:italic">&#34;请输入一个十进制整数: &#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">if</span> (scanf(<span style="font-style:italic">&#34;%d&#34;</span>, &amp;decimal) != 1) {
+</span></span><span style="display:flex;"><span>        printf(<span style="font-style:italic">&#34;输入错误，请输入一个有效的整数。</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="font-weight:bold">return</span> 1;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    decimalToBase36(decimal, result);
+</span></span><span style="display:flex;"><span>    printf(<span style="font-style:italic">&#34;对应的4位定长三十六进制字符串为: %s</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>, result);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//3、判断一个平台是低位优先还是高位优先；
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include</span> <span style="">&lt;stdio.h&gt;</span><span style="">
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="">int</span> isLittleEndian() {
+</span></span><span style="display:flex;"><span>    <span style="">int</span> num = 1;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">return</span> *((<span style="">char</span>*)&amp;num);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">int</span> main() {
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">if</span> (isLittleEndian()) {
+</span></span><span style="display:flex;"><span>        printf(<span style="font-style:italic">&#34;The platform is little - endian.</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>    } <span style="font-weight:bold">else</span> {
+</span></span><span style="display:flex;"><span>        printf(<span style="font-style:italic">&#34;The platform is big - endian.</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//4、改变一个整数的存储方式 (0x12345678 0x78563412)；
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include</span> <span style="">&lt;stdio.h&gt;</span><span style="">
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="">unsigned</span> <span style="">int</span> reverseBytes(<span style="">unsigned</span> <span style="">int</span> num) {
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">return</span> ((num &amp; 0xFF000000) &gt;&gt; 24) | ((num &amp; 0x00FF0000) &gt;&gt; 8) | ((num &amp; 0x0000FF00) &lt;&lt; 8) | ((num &amp; 0x000000FF) &lt;&lt; 24);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">int</span> main() {
+</span></span><span style="display:flex;"><span>    <span style="">unsigned</span> <span style="">int</span> num1 = 0x12345678;
+</span></span><span style="display:flex;"><span>    <span style="">unsigned</span> <span style="">int</span> num2 = 0x78563412;
+</span></span><span style="display:flex;"><span>    printf(<span style="font-style:italic">&#34;Before reversing: 0x%X</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>, num1);
+</span></span><span style="display:flex;"><span>    printf(<span style="font-style:italic">&#34;After reversing: 0x%X</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>, reverseBytes(num1));
+</span></span><span style="display:flex;"><span>    printf(<span style="font-style:italic">&#34;Before reversing: 0x%X</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>, num2);
+</span></span><span style="display:flex;"><span>    printf(<span style="font-style:italic">&#34;After reversing: 0x%X</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>, reverseBytes(num2));
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//5、将一个字符串按照单词逆置，如”hello world” “world hello”；
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include</span> <span style="">&lt;stdio.h&gt;</span><span style="">
+</span></span></span><span style="display:flex;"><span><span style="">#include</span> <span style="">&lt;string.h&gt;</span><span style="">
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="">void</span> reverseWords(<span style="">char</span>* str) {
+</span></span><span style="display:flex;"><span>    <span style="">int</span> len = strlen(str);
+</span></span><span style="display:flex;"><span>    <span style="">char</span> temp[len + 1];
+</span></span><span style="display:flex;"><span>    <span style="">int</span> j = 0;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">for</span> (<span style="">int</span> i = len - 1; i &gt;= 0; i--) {
+</span></span><span style="display:flex;"><span>        <span style="font-weight:bold">if</span> (str[i] ==<span style="">&#39;&#39;</span>) {
+</span></span><span style="display:flex;"><span>            <span style="font-weight:bold">for</span> (<span style="">int</span> k = i + 1; k &lt;= len - 1 &amp;&amp; str[k]!=<span style="">&#39;&#39;</span>; k++) {
+</span></span><span style="display:flex;"><span>                temp[j++] = str[k];
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            temp[j++] =<span style="">&#39;&#39;</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="font-weight:bold">if</span> (i == 0) {
+</span></span><span style="display:flex;"><span>            <span style="font-weight:bold">for</span> (<span style="">int</span> k = 0; k &lt;= len - 1 &amp;&amp; str[k]!=<span style="">&#39;&#39;</span>; k++) {
+</span></span><span style="display:flex;"><span>                temp[j++] = str[k];
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    temp[j] = <span style="font-style:italic">&#39;\0&#39;</span>;
+</span></span><span style="display:flex;"><span>    strcpy(str, temp);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">int</span> main() {
+</span></span><span style="display:flex;"><span>    <span style="">char</span> str[] = <span style="font-style:italic">&#34;hello world&#34;</span>;
+</span></span><span style="display:flex;"><span>    reverseWords(str);
+</span></span><span style="display:flex;"><span>    printf(<span style="font-style:italic">&#34;%s</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>, str);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//6、将一个字符串，左旋 N 个字符。如左旋 3 个字符：”hello world” “lo worldhel”；
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include</span> <span style="">&lt;stdio.h&gt;</span><span style="">
+</span></span></span><span style="display:flex;"><span><span style="">#include</span> <span style="">&lt;string.h&gt;</span><span style="">
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="">void</span> leftRotate(<span style="">char</span>* str, <span style="">int</span> n) {
+</span></span><span style="display:flex;"><span>    <span style="">int</span> len = strlen(str);
+</span></span><span style="display:flex;"><span>    n = n % len;
+</span></span><span style="display:flex;"><span>    <span style="">char</span> temp[n + 1];
+</span></span><span style="display:flex;"><span>    strncpy(temp, str, n);
+</span></span><span style="display:flex;"><span>    temp[n] = <span style="font-style:italic">&#39;\0&#39;</span>;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">for</span> (<span style="">int</span> i = 0; i &lt; len - n; i++) {
+</span></span><span style="display:flex;"><span>        str[i] = str[i + n];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    strcat(str, temp);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">int</span> main() {
+</span></span><span style="display:flex;"><span>    <span style="">char</span> str[] = <span style="font-style:italic">&#34;hello world&#34;</span>;
+</span></span><span style="display:flex;"><span>    leftRotate(str, 3);
+</span></span><span style="display:flex;"><span>    printf(<span style="font-style:italic">&#34;%s</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>, str);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//7、通过异或实现一个只带一个指针域的双向链表；
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include</span> <span style="">&lt;stdio.h&gt;</span><span style="">
+</span></span></span><span style="display:flex;"><span><span style="">#include</span> <span style="">&lt;stdlib.h&gt;</span><span style="">
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="font-style:italic">// 定义节点结构
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="font-weight:bold">typedef</span> <span style="font-weight:bold">struct</span> <span style="font-weight:bold">XorNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="">int</span> data;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">struct</span> <span style="font-weight:bold">XorNode</span>* ptr;
+</span></span><span style="display:flex;"><span>} XorNode;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-style:italic">// 辅助函数：获取两个指针的异或
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>XorNode* Xor(XorNode* a, XorNode* b) {
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">return</span> (XorNode*)((<span style="">unsigned</span> <span style="">long</span>)(a) ^ (<span style="">unsigned</span> <span style="">long</span>)(b));
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-style:italic">// 创建新节点
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>XorNode* createNode(<span style="">int</span> data) {
+</span></span><span style="display:flex;"><span>    XorNode* newNode = (XorNode*)malloc(<span style="font-weight:bold">sizeof</span>(XorNode));
+</span></span><span style="display:flex;"><span>    newNode-&gt;data = data;
+</span></span><span style="display:flex;"><span>    newNode-&gt;ptr = NULL;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">return</span> newNode;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-style:italic">// 在头部插入节点
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">void</span> insertAtHead(XorNode** head, <span style="">int</span> data) {
+</span></span><span style="display:flex;"><span>    XorNode* newNode = createNode(data);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">if</span> (*head!= NULL) {
+</span></span><span style="display:flex;"><span>        newNode-&gt;ptr = Xor(*head, NULL);
+</span></span><span style="display:flex;"><span>        (*head)-&gt;ptr = Xor(Xor((*head)-&gt;ptr, NULL), newNode);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    *head = newNode;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-style:italic">// 打印链表
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">void</span> printList(XorNode* head) {
+</span></span><span style="display:flex;"><span>    XorNode* prev = NULL;
+</span></span><span style="display:flex;"><span>    XorNode* curr = head;
+</span></span><span style="display:flex;"><span>    XorNode* next;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">while</span> (curr!= NULL) {
+</span></span><span style="display:flex;"><span>        printf(<span style="font-style:italic">&#34;%d &#34;</span>, curr-&gt;data);
+</span></span><span style="display:flex;"><span>        next = Xor(prev, curr-&gt;ptr);
+</span></span><span style="display:flex;"><span>        prev = curr;
+</span></span><span style="display:flex;"><span>        curr = next;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    printf(<span style="font-style:italic">&#34;</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-style:italic">// 释放链表内存
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">void</span> freeList(XorNode* head) {
+</span></span><span style="display:flex;"><span>    XorNode* prev = NULL;
+</span></span><span style="display:flex;"><span>    XorNode* curr = head;
+</span></span><span style="display:flex;"><span>    XorNode* next;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">while</span> (curr!= NULL) {
+</span></span><span style="display:flex;"><span>        next = Xor(prev, curr-&gt;ptr);
+</span></span><span style="display:flex;"><span>        free(curr);
+</span></span><span style="display:flex;"><span>        prev = curr;
+</span></span><span style="display:flex;"><span>        curr = next;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="">int</span> main() {
+</span></span><span style="display:flex;"><span>    XorNode* head = NULL;
+</span></span><span style="display:flex;"><span>    insertAtHead(&amp;head, 1);
+</span></span><span style="display:flex;"><span>    insertAtHead(&amp;head, 2);
+</span></span><span style="display:flex;"><span>    insertAtHead(&amp;head, 3);
+</span></span><span style="display:flex;"><span>    printList(head);
+</span></span><span style="display:flex;"><span>    freeList(head);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">return</span> 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>驱动框架
+<img src="/images/kl0013.png" alt="">
+<img src="/images/kl0014.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="font-style:italic">//框架
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#include</span> <span style="">&lt;ntddk.h&gt;</span><span style="">
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="">#define DEVICE_NAME L&#34;\\device\\ntmodeldrv&#34;</span><span style="font-style:italic">//设备名
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span><span style="">#define LINK_NAME L&#34;\\dosdevices\\ntmodeldrv&#34;</span><span style="font-style:italic">//符号链接
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="">#define IOCTRL_BASE 0x800
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="">#define MYIOCTRL_CODE(i) \
+</span></span></span><span style="display:flex;"><span><span style="">	CTL_CODE(FILE_DEVICE_UNKNOWN, IOCTRL_BASE+i, METHOD_BUFFERED,FILE_ANY_ACCESS)
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span><span style="">#define CTL_HELLO MYIOCTRL_CODE(0)
+</span></span></span><span style="display:flex;"><span><span style="">#define CTL_PRINT MYIOCTRL_CODE(1)
+</span></span></span><span style="display:flex;"><span><span style="">#define CTL_BYE MYIOCTRL_CODE(2)
+</span></span></span><span style="display:flex;"><span><span style=""></span>
+</span></span><span style="display:flex;"><span>NTSTATUS DispatchCommon(PDEVICE_OBJECT pObject, PIRP pIrp)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	pIrp-&gt;IoStatus.Status = STATUS_SUCCESS;
+</span></span><span style="display:flex;"><span>	pIrp-&gt;IoStatus.Information = 0;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	IoCompleteRequest(pIrp, IO_NO_INCREMENT);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">return</span> STATUS_SUCCESS;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NTSTATUS DispatchCreate(PDEVICE_OBJECT pObject, PIRP pIrp)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	pIrp-&gt;IoStatus.Status = STATUS_SUCCESS;
+</span></span><span style="display:flex;"><span>	pIrp-&gt;IoStatus.Information = 0;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	IoCompleteRequest(pIrp, IO_NO_INCREMENT);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">return</span> STATUS_SUCCESS;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NTSTATUS DispatchRead(PDEVICE_OBJECT pObject, PIRP pIrp)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	PVOID pReadBuffer = NULL;
+</span></span><span style="display:flex;"><span>	ULONG uReadLength = 0;
+</span></span><span style="display:flex;"><span>	PIO_STACK_LOCATION pStack = NULL;
+</span></span><span style="display:flex;"><span>	ULONG uMin = 0;
+</span></span><span style="display:flex;"><span>	ULONG uHelloStr = 0;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	uHelloStr = (wcslen(<span style="font-style:italic">L</span><span style="font-style:italic">&#34;hello world&#34;</span>) + 1) * <span style="font-weight:bold">sizeof</span>(WCHAR);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="font-style:italic">//第一步，拿到缓存的地址和长度
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>	<span style="font-style:italic">//从头部拿缓存地址
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>	pReadBuffer = pIrp-&gt;AssociatedIrp.SystemBuffer;
+</span></span><span style="display:flex;"><span>	<span style="font-style:italic">//从栈上拿缓存长度
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>	pStack = IoGetCurrentIrpStackLocation(pIrp);
+</span></span><span style="display:flex;"><span>	uReadLength = pStack-&gt;Parameters.Read.Length;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="font-style:italic">//第二步：读，写等操作
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>	uMin = uReadLength &gt; uHelloStr ? uHelloStr : uReadLength;
+</span></span><span style="display:flex;"><span>	RtlCopyMemory(pReadBuffer, <span style="font-style:italic">L</span><span style="font-style:italic">&#34;hello world&#34;</span>, uMin);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="font-style:italic">//第三步，完成IRP
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>	pIrp-&gt;IoStatus.Status = STATUS_SUCCESS;
+</span></span><span style="display:flex;"><span>	pIrp-&gt;IoStatus.Information = uMin;
+</span></span><span style="display:flex;"><span>	IoCompleteRequest(pIrp, IO_NO_INCREMENT);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">return</span> STATUS_SUCCESS;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NTSTATUS DispatchWrite(PDEVICE_OBJECT pObject, PIRP pIrp)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	PVOID pWriteBuff = NULL;
+</span></span><span style="display:flex;"><span>	ULONG uWriteLength = 0;
+</span></span><span style="display:flex;"><span>	PIO_STACK_LOCATION pStack = NULL;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	PVOID pBuffer = NULL;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	pWriteBuff = pIrp-&gt;AssociatedIrp.SystemBuffer;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	pStack = IoGetCurrentIrpStackLocation(pIrp);
+</span></span><span style="display:flex;"><span>	uWriteLength = pStack-&gt;Parameters.Write.Length;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	pBuffer = ExAllocatePoolWithTag(PagedPool, uWriteLength, <span style="">&#39;</span>TSET<span style="">&#39;</span>);
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">if</span> (pBuffer == NULL)
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		pIrp-&gt;IoStatus.Status = STATUS_INSUFFICIENT_RESOURCES;
+</span></span><span style="display:flex;"><span>		pIrp-&gt;IoStatus.Information = 0;
+</span></span><span style="display:flex;"><span>		IoCompleteRequest(pIrp, IO_NO_INCREMENT);
+</span></span><span style="display:flex;"><span>		<span style="font-weight:bold">return</span> STATUS_INSUFFICIENT_RESOURCES;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	memset(pBuffer, 0, uWriteLength);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	RtlCopyMemory(pBuffer, pWriteBuff, uWriteLength);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	ExFreePool(pBuffer);
+</span></span><span style="display:flex;"><span>	pBuffer = NULL;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	pIrp-&gt;IoStatus.Status = STATUS_SUCCESS;
+</span></span><span style="display:flex;"><span>	pIrp-&gt;IoStatus.Information = uWriteLength;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	IoCompleteRequest(pIrp, IO_NO_INCREMENT);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">return</span> STATUS_SUCCESS;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NTSTATUS DispatchIoctrl(PDEVICE_OBJECT pObject, PIRP pIrp)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	ULONG uIoctrlCode = 0;
+</span></span><span style="display:flex;"><span>	PVOID pInputBuff = NULL;
+</span></span><span style="display:flex;"><span>	PVOID pOutputBuff = NULL;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	ULONG uInputLength = 0;
+</span></span><span style="display:flex;"><span>	ULONG uOutputLength = 0;
+</span></span><span style="display:flex;"><span>	PIO_STACK_LOCATION pStack = NULL;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	pInputBuff = pOutputBuff = pIrp-&gt;AssociatedIrp.SystemBuffer;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	pStack = IoGetCurrentIrpStackLocation(pIrp);
+</span></span><span style="display:flex;"><span>	uInputLength = pStack-&gt;Parameters.DeviceIoControl.InputBufferLength;
+</span></span><span style="display:flex;"><span>	uOutputLength = pStack-&gt;Parameters.DeviceIoControl.OutputBufferLength;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	uIoctrlCode = pStack-&gt;Parameters.DeviceIoControl.IoControlCode;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">switch</span> (uIoctrlCode)
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">case</span> CTL_HELLO:
+</span></span><span style="display:flex;"><span>		DbgPrint(<span style="font-style:italic">&#34;Hello iocontrol</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>		<span style="font-weight:bold">break</span>;
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">case</span> CTL_PRINT:
+</span></span><span style="display:flex;"><span>		DbgPrint(<span style="font-style:italic">&#34;%ws</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>, pInputBuff);
+</span></span><span style="display:flex;"><span>		<span style="font-weight:bold">break</span>;
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">case</span> CTL_BYE:
+</span></span><span style="display:flex;"><span>		DbgPrint(<span style="font-style:italic">&#34;Goodbye iocontrol</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>		<span style="font-weight:bold">break</span>;
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">default</span>:
+</span></span><span style="display:flex;"><span>		DbgPrint(<span style="font-style:italic">&#34;Unknown iocontrol</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	pIrp-&gt;IoStatus.Status = STATUS_SUCCESS;
+</span></span><span style="display:flex;"><span>	pIrp-&gt;IoStatus.Information = 0;
+</span></span><span style="display:flex;"><span>	IoCompleteRequest(pIrp, IO_NO_INCREMENT);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">return</span> STATUS_SUCCESS;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NTSTATUS DispatchClean(PDEVICE_OBJECT pObject, PIRP pIrp)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	pIrp-&gt;IoStatus.Status = STATUS_SUCCESS;
+</span></span><span style="display:flex;"><span>	pIrp-&gt;IoStatus.Information = 0;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	IoCompleteRequest(pIrp, IO_NO_INCREMENT);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">return</span> STATUS_SUCCESS;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NTSTATUS DispatchClose(PDEVICE_OBJECT pObject, PIRP pIrp)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	pIrp-&gt;IoStatus.Status = STATUS_SUCCESS;
+</span></span><span style="display:flex;"><span>	pIrp-&gt;IoStatus.Information = 0;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	IoCompleteRequest(pIrp, IO_NO_INCREMENT);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">return</span> STATUS_SUCCESS;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>VOID DriverUnload(PDRIVER_OBJECT pDriverObject)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	UNICODE_STRING uLinkName = { 0 };
+</span></span><span style="display:flex;"><span>	RtlInitUnicodeString(&amp;uLinkName, LINK_NAME);
+</span></span><span style="display:flex;"><span>	IoDeleteSymbolicLink(&amp;uLinkName);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	IoDeleteDevice(pDriverObject-&gt;DeviceObject);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	DbgPrint(<span style="font-style:italic">&#34;Driver unloaded</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NTSTATUS DriverEntry(PDRIVER_OBJECT pDriverObject,
+</span></span><span style="display:flex;"><span>	PUNICODE_STRING pRegPath)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	UNICODE_STRING uDeviceName = { 0 };
+</span></span><span style="display:flex;"><span>	UNICODE_STRING uLinkName = { 0 };
+</span></span><span style="display:flex;"><span>	NTSTATUS ntStatus = 0;
+</span></span><span style="display:flex;"><span>	PDEVICE_OBJECT pDeviceObject = NULL;
+</span></span><span style="display:flex;"><span>	ULONG i = 0;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	DbgPrint(<span style="font-style:italic">&#34;Driver load begin</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	RtlInitUnicodeString(&amp;uDeviceName, DEVICE_NAME);
+</span></span><span style="display:flex;"><span>	RtlInitUnicodeString(&amp;uLinkName, LINK_NAME);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	RtlInitUnicodeString(&amp;uDeviceName,DEVICE_NAME);
+</span></span><span style="display:flex;"><span>	RtlInitUnicodeString(&amp;uLinkName,LINK_NAME);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	IoCreateDevice(pDriverObject,0,&amp;uDeviceName,FILE_DEVICE_UNKNOWN,0,FALSE,&amp;pDeviceObject);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	ntStatus = IoCreateDevice(pDriverObject,
+</span></span><span style="display:flex;"><span>		0, &amp;uDeviceName, FILE_DEVICE_UNKNOWN, 0, FALSE, &amp;pDeviceObject);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">if</span> (!NT_SUCCESS(ntStatus))
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		DbgPrint(<span style="font-style:italic">&#34;IoCreateDevice failed:%x&#34;</span>, ntStatus);
+</span></span><span style="display:flex;"><span>		<span style="font-weight:bold">return</span> ntStatus;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="font-style:italic">//DO_BUFFERED_IO规定R3和R0之间read和write通信的方式：
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>	<span style="font-style:italic">//1,buffered io
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>	<span style="font-style:italic">//2,direct io
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>	<span style="font-style:italic">//3,neither io
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>	pDeviceObject-&gt;Flags |= DO_BUFFERED_IO;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	ntStatus = IoCreateSymbolicLink(&amp;uLinkName, &amp;uDeviceName);
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">if</span> (!NT_SUCCESS(ntStatus))
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		IoDeleteDevice(pDeviceObject);
+</span></span><span style="display:flex;"><span>		DbgPrint(<span style="font-style:italic">&#34;IoCreateSymbolicLink failed:%x</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>, ntStatus);
+</span></span><span style="display:flex;"><span>		<span style="font-weight:bold">return</span> ntStatus;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">for</span> (i = 0; i &lt; IRP_MJ_MAXIMUM_FUNCTION + 1; i++)
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		pDriverObject-&gt;MajorFunction[i] = DispatchCommon;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	pDriverObject-&gt;MajorFunction[IRP_MJ_CREATE] = DispatchCreate;
+</span></span><span style="display:flex;"><span>	pDriverObject-&gt;MajorFunction[IRP_MJ_READ] = DispatchRead;
+</span></span><span style="display:flex;"><span>	pDriverObject-&gt;MajorFunction[IRP_MJ_WRITE] = DispatchWrite;
+</span></span><span style="display:flex;"><span>	pDriverObject-&gt;MajorFunction[IRP_MJ_DEVICE_CONTROL] = DispatchIoctrl;
+</span></span><span style="display:flex;"><span>	pDriverObject-&gt;MajorFunction[IRP_MJ_CLEANUP] = DispatchClean;
+</span></span><span style="display:flex;"><span>	pDriverObject-&gt;MajorFunction[IRP_MJ_CLOSE] = DispatchClose;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	pDriverObject-&gt;DriverUnload = DriverUnload;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	DbgPrint(<span style="font-style:italic">&#34;Driver load ok!</span><span style="font-weight:bold;font-style:italic">\n</span><span style="font-style:italic">&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="font-weight:bold">return</span> STATUS_SUCCESS;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"></code></pre></div><hr>
+<hr>
+<hr>
+<h1 id="保护模式">保护模式</h1>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="">#include&lt;ntifs.h&gt;
 </span></span></span><span style="display:flex;"><span><span style=""></span>
 </span></span><span style="display:flex;"><span>VOID DriverUnload(PDRIVER_OBJECT pDriver)
