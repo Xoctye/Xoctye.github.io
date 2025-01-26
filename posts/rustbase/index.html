@@ -21,7 +21,7 @@
       "articleSection" : "posts",
       "name" : "Rust基础",
       "headline" : "Rust基础",
-      "description" : "Rust语言圣经 Rust逆向入门：从反编译视角学习内存模型\n",
+      "description" : "Rust语言圣经 Rust逆向入门：从反编译视角学习内存模型\nrust的特性 一、所有权系统 所有权机制： rust拥有独特的所有权系统，确保在编译时就能够管理内存安全，避免了常见的内存错误，如空指针引用、野指针、悬垂指针和数据竞争等。 每个值都有一个所有者，并且在同一时间只有一个所有者，当所有者离开作用域时，其拥有的值会被自动释放。 fn main(){ let s=String::new();\/\/当s离开main函数的作用域时，String的内存会被自动释放 } 借用规则： 可以通过引用（借用）来访问数据而不获取所有权。引用分为不可变引用（\u0026amp;T）和可变引用（\u0026amp;mut T） 可以有多个不可变引用，但在同一时间只能有一个可变引用，防止了数据竞争。 生命周期 fn longest\u0026lt;\u0026#39;a\u0026gt;(x:\u0026amp;\u0026#39;a str,y:\u0026amp;\u0026#39;a str)-\u0026gt;\u0026amp;\u0026#39;a str{ if x.len()\u0026gt;y.len(){ x }else{ y } } 二、模式匹配 强大的模式匹配： enum Message{ Quit, Move{x:i32,y:i32}, Write(String), ChangeColor(i32,i32,i32), } fn main(){ let msg=Message::ChangeColor(255,0,0); match msg{ Message::Quit=\u0026gt;println!(\u0026#34;quit\u0026#34;), Message::Move{x,y}=\u0026gt;println!(\u0026#34;move to x={},y={}\u0026#34;,x,y), Message::Write(s)=\u0026gt;println!(\u0026#34;write {}\u0026#34;,s), Message::ChangeColor(r,g,b)=\u0026gt;println!(\u0026#34;change color to r={},g={},b={}\u0026#34;,r,g,b), } } 匹配守卫和绑定： fn main(){ let num=Some(5); if let Some(x)=num{ if x\u0026gt;10{ println!(\u0026#34;x is greater than 10\u0026#34;); }else{ println!(\u0026#34;x is less than 10\u0026#34;); } } } 三、错误处理 Result和Option类型： use std::fs::File; fn main(){ let f=File::open(\u0026#34;test.txt\u0026#34;); match f{ Ok(file)=\u0026gt;println!(\u0026#34;File opened:{:?}\u0026#34;,file), Err(e)=\u0026gt;println!(\u0026#34;Error opening file:{}\u0026#34;,e), } } ?操作符 use std::fs::File; use std::io::Read; fn read_file()-\u0026gt;Result\u0026lt;String,std::io::Error\u0026gt;{ let mut f=File::open(\u0026#34;test.txt\u0026#34;)?; let mut s=String::new(); f.read_to_string(\u0026amp;mut s)?; Ok(s) } fn main(){ match read_file(){ Ok(s)=\u0026gt;println!(\u0026#34;File contents:{}\u0026#34;,s), Err(e)=\u0026gt;println!(\u0026#34;Error reading file:{}\u0026#34;,e), } } 四、模块和包管理 模块系统： mod my_module{ pub fn hello(){ println!(\u0026#34;Hello from my module!\u0026#34;); } } fn main(){ my_module::hello(); } cargo包管理 五、并发和执行 安全的并发 use std::thread; fn main() { let handle = thread::spawn(|| { println!(\u0026#34;thread\u0026#34;); }); handle.join().unwrap(); } send和sync标记特征： 六、宏系统 声明宏和过程宏： macro_rules! say_hello{ ()=\u0026gt;( println!(\u0026#34;hello world!\u0026#34;); ); } fn main(){ say_hello!(); } 七、抽象 迭代器、闭包、trait fn main(){ let v=vec![1,2,3]; let sum:i32=v.iter().map(|x| x*2).sum(); println!(\u0026#34;{}\u0026#34;,sum); } 八、安全的FFI支持 外部函数接口（FFI）： extern \u0026#34;C\u0026#34;{ fn sqrt(x:f64)-\u0026gt;f64; } fn main(){ unsafe{ let result=sqrt(4.0); println!(\u0026#34;{}\u0026#34;,result); } } 九、零碎知识 闭包： 闭包是一种匿名函数，它可以赋值给变量也可以作为参数传递给其它函数，不同于函数的是，它允许捕获调用者作用域中的值。 fn main(){ let x=1; let sum=|y| x\u002by; assert_eq!(3,sum(3)); } use std::thread; use std::time::Duration; fn workout(intensity: u32, random_number: u32) { let action = || { println!(\u0026#34;muuuu.....\u0026#34;); thread::sleep(Duration::from_secs(2)); intensity }; if intensity \u0026lt; 25 { println!( \u0026#34;今天活力满满，先做 {} 个俯卧撑!\u0026#34;, action() ); println!( \u0026#34;旁边有妹子在看，俯卧撑太low，再来 {} 组卧推!\u0026#34;, action() ); } else if random_number == 3 { println!(\u0026#34;昨天练过度了，今天还是休息下吧！\u0026#34;); } else { println!( \u0026#34;昨天练过度了，今天干干有氧，跑步 {} 分钟!\u0026#34;, action() ); } } fn main() { \/\/ 动作次数 let intensity = 10; \/\/ 随机值用来决定某个选择 let random_number = 7; \/\/ 开始健身 workout(intensity, random_number); } ",
       "inLanguage" : "en-US",
       "author" : "",
       "creator" : "",
@@ -39,9 +39,9 @@
   <meta property="og:title" content="Rust基础" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="Rust语言圣经 Rust逆向入门：从反编译视角学习内存模型
-" />
+rust的特性 一、所有权系统 所有权机制： rust拥有独特的所有权系统，确保在编译时就能够管理内存安全，避免了常见的内存错误，如空指针引用、野指针、悬垂指针和数据竞争等。 每个值都有一个所有者，并且在同一时间只有一个所有者，当所有者离开作用域时，其拥有的值会被自动释放。 fn main(){ let s=String::new();//当s离开main函数的作用域时，String的内存会被自动释放 } 借用规则： 可以通过引用（借用）来访问数据而不获取所有权。引用分为不可变引用（&amp;T）和可变引用（&amp;mut T） 可以有多个不可变引用，但在同一时间只能有一个可变引用，防止了数据竞争。 生命周期 fn longest&lt;&#39;a&gt;(x:&amp;&#39;a str,y:&amp;&#39;a str)-&gt;&amp;&#39;a str{ if x.len()&gt;y.len(){ x }else{ y } } 二、模式匹配 强大的模式匹配： enum Message{ Quit, Move{x:i32,y:i32}, Write(String), ChangeColor(i32,i32,i32), } fn main(){ let msg=Message::ChangeColor(255,0,0); match msg{ Message::Quit=&gt;println!(&#34;quit&#34;), Message::Move{x,y}=&gt;println!(&#34;move to x={},y={}&#34;,x,y), Message::Write(s)=&gt;println!(&#34;write {}&#34;,s), Message::ChangeColor(r,g,b)=&gt;println!(&#34;change color to r={},g={},b={}&#34;,r,g,b), } } 匹配守卫和绑定： fn main(){ let num=Some(5); if let Some(x)=num{ if x&gt;10{ println!(&#34;x is greater than 10&#34;); }else{ println!(&#34;x is less than 10&#34;); } } } 三、错误处理 Result和Option类型： use std::fs::File; fn main(){ let f=File::open(&#34;test.txt&#34;); match f{ Ok(file)=&gt;println!(&#34;File opened:{:?}&#34;,file), Err(e)=&gt;println!(&#34;Error opening file:{}&#34;,e), } } ?操作符 use std::fs::File; use std::io::Read; fn read_file()-&gt;Result&lt;String,std::io::Error&gt;{ let mut f=File::open(&#34;test.txt&#34;)?; let mut s=String::new(); f.read_to_string(&amp;mut s)?; Ok(s) } fn main(){ match read_file(){ Ok(s)=&gt;println!(&#34;File contents:{}&#34;,s), Err(e)=&gt;println!(&#34;Error reading file:{}&#34;,e), } } 四、模块和包管理 模块系统： mod my_module{ pub fn hello(){ println!(&#34;Hello from my module!&#34;); } } fn main(){ my_module::hello(); } cargo包管理 五、并发和执行 安全的并发 use std::thread; fn main() { let handle = thread::spawn(|| { println!(&#34;thread&#34;); }); handle.join().unwrap(); } send和sync标记特征： 六、宏系统 声明宏和过程宏： macro_rules! say_hello{ ()=&gt;( println!(&#34;hello world!&#34;); ); } fn main(){ say_hello!(); } 七、抽象 迭代器、闭包、trait fn main(){ let v=vec![1,2,3]; let sum:i32=v.iter().map(|x| x*2).sum(); println!(&#34;{}&#34;,sum); } 八、安全的FFI支持 外部函数接口（FFI）： extern &#34;C&#34;{ fn sqrt(x:f64)-&gt;f64; } fn main(){ unsafe{ let result=sqrt(4.0); println!(&#34;{}&#34;,result); } } 九、零碎知识 闭包： 闭包是一种匿名函数，它可以赋值给变量也可以作为参数传递给其它函数，不同于函数的是，它允许捕获调用者作用域中的值。 fn main(){ let x=1; let sum=|y| x&#43;y; assert_eq!(3,sum(3)); } use std::thread; use std::time::Duration; fn workout(intensity: u32, random_number: u32) { let action = || { println!(&#34;muuuu.....&#34;); thread::sleep(Duration::from_secs(2)); intensity }; if intensity &lt; 25 { println!( &#34;今天活力满满，先做 {} 个俯卧撑!&#34;, action() ); println!( &#34;旁边有妹子在看，俯卧撑太low，再来 {} 组卧推!&#34;, action() ); } else if random_number == 3 { println!(&#34;昨天练过度了，今天还是休息下吧！&#34;); } else { println!( &#34;昨天练过度了，今天干干有氧，跑步 {} 分钟!&#34;, action() ); } } fn main() { // 动作次数 let intensity = 10; // 随机值用来决定某个选择 let random_number = 7; // 开始健身 workout(intensity, random_number); } " />
   <meta name="description" content="Rust语言圣经 Rust逆向入门：从反编译视角学习内存模型
-" />
+rust的特性 一、所有权系统 所有权机制： rust拥有独特的所有权系统，确保在编译时就能够管理内存安全，避免了常见的内存错误，如空指针引用、野指针、悬垂指针和数据竞争等。 每个值都有一个所有者，并且在同一时间只有一个所有者，当所有者离开作用域时，其拥有的值会被自动释放。 fn main(){ let s=String::new();//当s离开main函数的作用域时，String的内存会被自动释放 } 借用规则： 可以通过引用（借用）来访问数据而不获取所有权。引用分为不可变引用（&amp;T）和可变引用（&amp;mut T） 可以有多个不可变引用，但在同一时间只能有一个可变引用，防止了数据竞争。 生命周期 fn longest&lt;&#39;a&gt;(x:&amp;&#39;a str,y:&amp;&#39;a str)-&gt;&amp;&#39;a str{ if x.len()&gt;y.len(){ x }else{ y } } 二、模式匹配 强大的模式匹配： enum Message{ Quit, Move{x:i32,y:i32}, Write(String), ChangeColor(i32,i32,i32), } fn main(){ let msg=Message::ChangeColor(255,0,0); match msg{ Message::Quit=&gt;println!(&#34;quit&#34;), Message::Move{x,y}=&gt;println!(&#34;move to x={},y={}&#34;,x,y), Message::Write(s)=&gt;println!(&#34;write {}&#34;,s), Message::ChangeColor(r,g,b)=&gt;println!(&#34;change color to r={},g={},b={}&#34;,r,g,b), } } 匹配守卫和绑定： fn main(){ let num=Some(5); if let Some(x)=num{ if x&gt;10{ println!(&#34;x is greater than 10&#34;); }else{ println!(&#34;x is less than 10&#34;); } } } 三、错误处理 Result和Option类型： use std::fs::File; fn main(){ let f=File::open(&#34;test.txt&#34;); match f{ Ok(file)=&gt;println!(&#34;File opened:{:?}&#34;,file), Err(e)=&gt;println!(&#34;Error opening file:{}&#34;,e), } } ?操作符 use std::fs::File; use std::io::Read; fn read_file()-&gt;Result&lt;String,std::io::Error&gt;{ let mut f=File::open(&#34;test.txt&#34;)?; let mut s=String::new(); f.read_to_string(&amp;mut s)?; Ok(s) } fn main(){ match read_file(){ Ok(s)=&gt;println!(&#34;File contents:{}&#34;,s), Err(e)=&gt;println!(&#34;Error reading file:{}&#34;,e), } } 四、模块和包管理 模块系统： mod my_module{ pub fn hello(){ println!(&#34;Hello from my module!&#34;); } } fn main(){ my_module::hello(); } cargo包管理 五、并发和执行 安全的并发 use std::thread; fn main() { let handle = thread::spawn(|| { println!(&#34;thread&#34;); }); handle.join().unwrap(); } send和sync标记特征： 六、宏系统 声明宏和过程宏： macro_rules! say_hello{ ()=&gt;( println!(&#34;hello world!&#34;); ); } fn main(){ say_hello!(); } 七、抽象 迭代器、闭包、trait fn main(){ let v=vec![1,2,3]; let sum:i32=v.iter().map(|x| x*2).sum(); println!(&#34;{}&#34;,sum); } 八、安全的FFI支持 外部函数接口（FFI）： extern &#34;C&#34;{ fn sqrt(x:f64)-&gt;f64; } fn main(){ unsafe{ let result=sqrt(4.0); println!(&#34;{}&#34;,result); } } 九、零碎知识 闭包： 闭包是一种匿名函数，它可以赋值给变量也可以作为参数传递给其它函数，不同于函数的是，它允许捕获调用者作用域中的值。 fn main(){ let x=1; let sum=|y| x&#43;y; assert_eq!(3,sum(3)); } use std::thread; use std::time::Duration; fn workout(intensity: u32, random_number: u32) { let action = || { println!(&#34;muuuu.....&#34;); thread::sleep(Duration::from_secs(2)); intensity }; if intensity &lt; 25 { println!( &#34;今天活力满满，先做 {} 个俯卧撑!&#34;, action() ); println!( &#34;旁边有妹子在看，俯卧撑太low，再来 {} 组卧推!&#34;, action() ); } else if random_number == 3 { println!(&#34;昨天练过度了，今天还是休息下吧！&#34;); } else { println!( &#34;昨天练过度了，今天干干有氧，跑步 {} 分钟!&#34;, action() ); } } fn main() { // 动作次数 let intensity = 10; // 随机值用来决定某个选择 let random_number = 7; // 开始健身 workout(intensity, random_number); } " />
   <meta property="og:locale" content="cn" /><meta property="og:image" content="" />
   
 
@@ -128,7 +128,209 @@
           
           <p><a href="https://course.rs">Rust语言圣经</a>
 <a href="https://research.qianxin.com/archives/2342">Rust逆向入门：从反编译视角学习内存模型</a></p>
-
+<h3 id="rust的特性">rust的特性</h3>
+<h5 id="一所有权系统">一、所有权系统</h5>
+<ul>
+<li>所有权机制：
+rust拥有独特的所有权系统，确保在编译时就能够管理内存安全，避免了常见的内存错误，如空指针引用、野指针、悬垂指针和数据竞争等。
+每个值都有一个所有者，并且在同一时间只有一个所有者，当所有者离开作用域时，其拥有的值会被自动释放。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="font-weight:bold">fn</span> main(){
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">let</span> s=String::new();<span style="font-style:italic">//当s离开main函数的作用域时，String的内存会被自动释放
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>}
+</span></span></code></pre></div><ul>
+<li>借用规则：
+可以通过引用（借用）来访问数据而不获取所有权。引用分为不可变引用（&amp;T）和可变引用（&amp;mut T）
+可以有多个不可变引用，但在同一时间只能有一个可变引用，防止了数据竞争。</li>
+<li>生命周期</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="font-weight:bold">fn</span> longest&lt;&#39;a&gt;(x:<span style="">&amp;</span>&#39;a <span style="">str</span>,y:<span style="">&amp;</span>&#39;a <span style="">str</span>)-&gt;<span style="">&amp;</span>&#39;a <span style="">str</span>{
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">if</span> x.len()&gt;y.len(){
+</span></span><span style="display:flex;"><span>        x
+</span></span><span style="display:flex;"><span>    }<span style="font-weight:bold">else</span>{
+</span></span><span style="display:flex;"><span>        y
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h5 id="二模式匹配">二、模式匹配</h5>
+<ul>
+<li>强大的模式匹配：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="font-weight:bold">enum</span> <span style="font-weight:bold">Message</span>{
+</span></span><span style="display:flex;"><span>    Quit,
+</span></span><span style="display:flex;"><span>    Move{x:<span style="">i32</span>,y:<span style="">i32</span>},
+</span></span><span style="display:flex;"><span>    Write(String),
+</span></span><span style="display:flex;"><span>    ChangeColor(<span style="">i32</span>,<span style="">i32</span>,<span style="">i32</span>),
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">fn</span> main(){
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">let</span> msg=Message::ChangeColor(255,0,0);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">match</span> msg{
+</span></span><span style="display:flex;"><span>        Message::Quit=&gt;println!(<span style="font-style:italic">&#34;quit&#34;</span>),
+</span></span><span style="display:flex;"><span>        Message::Move{x,y}=&gt;println!(<span style="font-style:italic">&#34;move to x=</span><span style="font-weight:bold;font-style:italic">{}</span><span style="font-style:italic">,y=</span><span style="font-weight:bold;font-style:italic">{}</span><span style="font-style:italic">&#34;</span>,x,y),
+</span></span><span style="display:flex;"><span>        Message::Write(s)=&gt;println!(<span style="font-style:italic">&#34;write </span><span style="font-weight:bold;font-style:italic">{}</span><span style="font-style:italic">&#34;</span>,s),
+</span></span><span style="display:flex;"><span>        Message::ChangeColor(r,g,b)=&gt;println!(<span style="font-style:italic">&#34;change color to r=</span><span style="font-weight:bold;font-style:italic">{}</span><span style="font-style:italic">,g=</span><span style="font-weight:bold;font-style:italic">{}</span><span style="font-style:italic">,b=</span><span style="font-weight:bold;font-style:italic">{}</span><span style="font-style:italic">&#34;</span>,r,g,b),
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>匹配守卫和绑定：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="font-weight:bold">fn</span> main(){
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">let</span> num=Some(5);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">if</span> <span style="font-weight:bold">let</span> Some(x)=num{
+</span></span><span style="display:flex;"><span>        <span style="font-weight:bold">if</span> x&gt;10{
+</span></span><span style="display:flex;"><span>            println!(<span style="font-style:italic">&#34;x is greater than 10&#34;</span>);
+</span></span><span style="display:flex;"><span>        }<span style="font-weight:bold">else</span>{
+</span></span><span style="display:flex;"><span>            println!(<span style="font-style:italic">&#34;x is less than 10&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h5 id="三错误处理">三、错误处理</h5>
+<ul>
+<li>Result和Option类型：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="font-weight:bold">use</span> std::fs::File;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">fn</span> main(){
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">let</span> f=File::open(<span style="font-style:italic">&#34;test.txt&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">match</span> f{
+</span></span><span style="display:flex;"><span>        Ok(file)=&gt;println!(<span style="font-style:italic">&#34;File opened:</span><span style="font-weight:bold;font-style:italic">{:?}</span><span style="font-style:italic">&#34;</span>,file),
+</span></span><span style="display:flex;"><span>        Err(e)=&gt;println!(<span style="font-style:italic">&#34;Error opening file:</span><span style="font-weight:bold;font-style:italic">{}</span><span style="font-style:italic">&#34;</span>,e),
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>?操作符</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="font-weight:bold">use</span> std::fs::File;
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">use</span> std::io::Read;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">fn</span> read_file()-&gt;Result&lt;String,std::io::Error&gt;{
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">let</span> <span style="font-weight:bold">mut</span> f=File::open(<span style="font-style:italic">&#34;test.txt&#34;</span>)?;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">let</span> <span style="font-weight:bold">mut</span> s=String::new();
+</span></span><span style="display:flex;"><span>    f.read_to_string(&amp;<span style="font-weight:bold">mut</span> s)?;
+</span></span><span style="display:flex;"><span>    Ok(s)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">fn</span> main(){
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">match</span> read_file(){
+</span></span><span style="display:flex;"><span>        Ok(s)=&gt;println!(<span style="font-style:italic">&#34;File contents:</span><span style="font-weight:bold;font-style:italic">{}</span><span style="font-style:italic">&#34;</span>,s),
+</span></span><span style="display:flex;"><span>        Err(e)=&gt;println!(<span style="font-style:italic">&#34;Error reading file:</span><span style="font-weight:bold;font-style:italic">{}</span><span style="font-style:italic">&#34;</span>,e),
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h5 id="四模块和包管理">四、模块和包管理</h5>
+<ul>
+<li>模块系统：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="font-weight:bold">mod</span> <span style="font-weight:bold">my_module</span>{
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">pub</span> <span style="font-weight:bold">fn</span> hello(){
+</span></span><span style="display:flex;"><span>        println!(<span style="font-style:italic">&#34;Hello from my module!&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">fn</span> main(){
+</span></span><span style="display:flex;"><span>    my_module::hello();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>cargo包管理</li>
+</ul>
+<h5 id="五并发和执行">五、并发和执行</h5>
+<ul>
+<li>安全的并发</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="font-weight:bold">use</span> std::thread;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">fn</span> main() {
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">let</span> handle = thread::spawn(|| {
+</span></span><span style="display:flex;"><span>        println!(<span style="font-style:italic">&#34;thread&#34;</span>);
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    handle.join().unwrap();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>send和sync标记特征：</li>
+</ul>
+<h5 id="六宏系统">六、宏系统</h5>
+<ul>
+<li>声明宏和过程宏：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span>macro_rules! say_hello{
+</span></span><span style="display:flex;"><span>    ()=&gt;(
+</span></span><span style="display:flex;"><span>        println!(<span style="font-style:italic">&#34;hello world!&#34;</span>);
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">fn</span> main(){
+</span></span><span style="display:flex;"><span>    say_hello!();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h5 id="七抽象">七、抽象</h5>
+<ul>
+<li>迭代器、闭包、trait</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="font-weight:bold">fn</span> main(){
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">let</span> v=vec![1,2,3];
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">let</span> sum:<span style="">i32</span>=v.iter().map(|x| x*2).sum();
+</span></span><span style="display:flex;"><span>    println!(<span style="font-style:italic">&#34;</span><span style="font-weight:bold;font-style:italic">{}</span><span style="font-style:italic">&#34;</span>,sum);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h5 id="八安全的ffi支持">八、安全的FFI支持</h5>
+<ul>
+<li>外部函数接口（FFI）：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="font-weight:bold">extern</span> <span style="font-style:italic">&#34;C&#34;</span>{
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">fn</span> sqrt(x:<span style="">f64</span>)-&gt;<span style="">f64</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">fn</span> main(){
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">unsafe</span>{
+</span></span><span style="display:flex;"><span>        <span style="font-weight:bold">let</span> result=sqrt(4.0);
+</span></span><span style="display:flex;"><span>        println!(<span style="font-style:italic">&#34;</span><span style="font-weight:bold;font-style:italic">{}</span><span style="font-style:italic">&#34;</span>,result);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h5 id="九零碎知识">九、零碎知识</h5>
+<ul>
+<li>闭包：
+闭包是一种匿名函数，它可以赋值给变量也可以作为参数传递给其它函数，不同于函数的是，它允许捕获调用者作用域中的值。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="font-weight:bold">fn</span> main(){
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">let</span> x=1;
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">let</span> sum=|y| x+y;
+</span></span><span style="display:flex;"><span>    assert_eq!(3,sum(3));
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="font-weight:bold">use</span> std::thread;
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">use</span> std::time::Duration;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">fn</span> workout(intensity: <span style="">u32</span>, random_number: <span style="">u32</span>) {
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">let</span> action = || {
+</span></span><span style="display:flex;"><span>        println!(<span style="font-style:italic">&#34;muuuu.....&#34;</span>);
+</span></span><span style="display:flex;"><span>        thread::sleep(Duration::from_secs(2));
+</span></span><span style="display:flex;"><span>        intensity
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="font-weight:bold">if</span> intensity &lt; 25 {
+</span></span><span style="display:flex;"><span>        println!(
+</span></span><span style="display:flex;"><span>            <span style="font-style:italic">&#34;今天活力满满，先做 </span><span style="font-weight:bold;font-style:italic">{}</span><span style="font-style:italic"> 个俯卧撑!&#34;</span>,
+</span></span><span style="display:flex;"><span>            action()
+</span></span><span style="display:flex;"><span>        );
+</span></span><span style="display:flex;"><span>        println!(
+</span></span><span style="display:flex;"><span>            <span style="font-style:italic">&#34;旁边有妹子在看，俯卧撑太low，再来 </span><span style="font-weight:bold;font-style:italic">{}</span><span style="font-style:italic"> 组卧推!&#34;</span>,
+</span></span><span style="display:flex;"><span>            action()
+</span></span><span style="display:flex;"><span>        );
+</span></span><span style="display:flex;"><span>    } <span style="font-weight:bold">else</span> <span style="font-weight:bold">if</span> random_number == 3 {
+</span></span><span style="display:flex;"><span>        println!(<span style="font-style:italic">&#34;昨天练过度了，今天还是休息下吧！&#34;</span>);
+</span></span><span style="display:flex;"><span>    } <span style="font-weight:bold">else</span> {
+</span></span><span style="display:flex;"><span>        println!(
+</span></span><span style="display:flex;"><span>            <span style="font-style:italic">&#34;昨天练过度了，今天干干有氧，跑步 </span><span style="font-weight:bold;font-style:italic">{}</span><span style="font-style:italic"> 分钟!&#34;</span>,
+</span></span><span style="display:flex;"><span>            action()
+</span></span><span style="display:flex;"><span>        );
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">fn</span> main() {
+</span></span><span style="display:flex;"><span>    <span style="font-style:italic">// 动作次数
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>    <span style="font-weight:bold">let</span> intensity = 10;
+</span></span><span style="display:flex;"><span>    <span style="font-style:italic">// 随机值用来决定某个选择
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>    <span style="font-weight:bold">let</span> random_number = 7;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="font-style:italic">// 开始健身
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic"></span>    workout(intensity, random_number);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
         </div>
 
         <div class="row middle-xs">
