@@ -7,8 +7,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="author" content="" />
-  <meta property="og:url" content="https://xoctye.github.io/posts/windowsinternals/" />
-  <link rel="canonical" href="https://xoctye.github.io/posts/windowsinternals/" /><link rel="alternate" type="application/atom+xml" href="https://xoctye.github.io/index.xml" title="Shredder&#39;s Blog">
+  <meta property="og:url" content="https://xoctye.github.io/posts/cryptography/" />
+  <link rel="canonical" href="https://xoctye.github.io/posts/cryptography/" /><link rel="alternate" type="application/atom+xml" href="https://xoctye.github.io/index.xml" title="Shredder&#39;s Blog">
 
   <script type="application/ld+json">
   {
@@ -19,37 +19,27 @@
            "@id": "https:\/\/xoctye.github.io\/"
       },
       "articleSection" : "posts",
-      "name" : "深入解析Windows操作系统",
-      "headline" : "深入解析Windows操作系统",
-      "description" : "第一章 创建服务相关函数：OpenSCManger, QueryServiceStatus, CreateService, StartService, ChangeServiceConfig, ControlService, DeleteService 窗口句柄、PID、模块名称、COM组件、.NET\n第二章 windows核心组件的文件名\n文件名 组件 ntoskrnl.exe 执行体和内核 hal.dll HAL win32k.sys windows子系统的内核模式部分 hvix64.exe 虚拟机监控程序 \\systemroot\\system32\\drivers下的.sys文件 核心驱动程序 ntdll.dll 内部支持函数，以及执行体函数的系统服务分发存根 kernel32.dll、user32.dll、gdi32.dll 核心windows子系统dll smss.exe(会话管理器)是系统创建的第一个用户模式进程。\n服务控制管理器（service control manager）是一种由services.exe映像运行的特殊系统进程，负责服务进程的启动、停止和交互。\n第三章 创建进程相关函数：CreateProcess、CreateProcessWithLogonW、CreateProcessWithTokenW 每个windows进程都可以用一种执行体进程结构（EPROCESS）来表示\u0026hellip;每个线程都可以用一个执行体线程结构（ETHREAD）来表示。 EPROCESS及其大部分相关数据结构都位于系统地址空间中，唯一的例外是进程环境块（PEB），它位于进程（用户）地址空间中（因为它包含了由用户模式代码访问的信息）。\n除了Idle进程，每个EPROCESS结构都会被执行体对象管理器封装为进程对象。 执行体进程结构的第一个成员名为进程控制块（ProcessControl Block, PCB）,这是一种KPROCESS类型的结构，专用于内核进程。 kd\u0026gt; dt nt!_eprocess \u002b0x000 Pcb : _KPROCESS ...... \u002b0x0ec DebugPort : Ptr32 Void ...... 由于KPROCESS位于EPROCESS的首位，EPROCESS的地址通常也可以作为KPROCESS的地址用于dt_kprocess中。 第四章",
+      "name" : "密码学",
+      "headline" : "密码学",
+      "description" : "密码学的数学基础 https:\/\/www.bilibili.com\/video\/BV1bY411G7sY 整除性：b整除a (b|a) a=qb 最大公约数，记作 gcd(a,b) 最大公约数只能是0或正整数，不能是负的 ](https:\/\/www.bilibili.com\/video\/BV1x5411R7qP?t=21.9) ",
       "inLanguage" : "en-US",
       "author" : "",
       "creator" : "",
       "publisher": "",
       "accountablePerson" : "",
       "copyrightHolder" : "",
-      "copyrightYear" : "2024",
-      "datePublished": "2024-11-21 10:12:08 \u002b0000 UTC",
-      "dateModified" : "2024-11-21 10:12:08 \u002b0000 UTC",
-      "url" : "https:\/\/xoctye.github.io\/posts\/windowsinternals\/",
+      "copyrightYear" : "2025",
+      "datePublished": "2025-01-22 10:12:38 \u002b0000 UTC",
+      "dateModified" : "2025-01-22 10:12:38 \u002b0000 UTC",
+      "url" : "https:\/\/xoctye.github.io\/posts\/cryptography\/",
       "keywords" : [  ]
   }
 </script>
-<title>深入解析Windows操作系统</title>
-  <meta property="og:title" content="深入解析Windows操作系统" />
+<title>密码学</title>
+  <meta property="og:title" content="密码学" />
   <meta property="og:type" content="article" />
-  <meta property="og:description" content="第一章 创建服务相关函数：OpenSCManger, QueryServiceStatus, CreateService, StartService, ChangeServiceConfig, ControlService, DeleteService 窗口句柄、PID、模块名称、COM组件、.NET
-第二章 windows核心组件的文件名
-文件名 组件 ntoskrnl.exe 执行体和内核 hal.dll HAL win32k.sys windows子系统的内核模式部分 hvix64.exe 虚拟机监控程序 \systemroot\system32\drivers下的.sys文件 核心驱动程序 ntdll.dll 内部支持函数，以及执行体函数的系统服务分发存根 kernel32.dll、user32.dll、gdi32.dll 核心windows子系统dll smss.exe(会话管理器)是系统创建的第一个用户模式进程。
-服务控制管理器（service control manager）是一种由services.exe映像运行的特殊系统进程，负责服务进程的启动、停止和交互。
-第三章 创建进程相关函数：CreateProcess、CreateProcessWithLogonW、CreateProcessWithTokenW 每个windows进程都可以用一种执行体进程结构（EPROCESS）来表示&hellip;每个线程都可以用一个执行体线程结构（ETHREAD）来表示。 EPROCESS及其大部分相关数据结构都位于系统地址空间中，唯一的例外是进程环境块（PEB），它位于进程（用户）地址空间中（因为它包含了由用户模式代码访问的信息）。
-除了Idle进程，每个EPROCESS结构都会被执行体对象管理器封装为进程对象。 执行体进程结构的第一个成员名为进程控制块（ProcessControl Block, PCB）,这是一种KPROCESS类型的结构，专用于内核进程。 kd&gt; dt nt!_eprocess &#43;0x000 Pcb : _KPROCESS ...... &#43;0x0ec DebugPort : Ptr32 Void ...... 由于KPROCESS位于EPROCESS的首位，EPROCESS的地址通常也可以作为KPROCESS的地址用于dt_kprocess中。 第四章" />
-  <meta name="description" content="第一章 创建服务相关函数：OpenSCManger, QueryServiceStatus, CreateService, StartService, ChangeServiceConfig, ControlService, DeleteService 窗口句柄、PID、模块名称、COM组件、.NET
-第二章 windows核心组件的文件名
-文件名 组件 ntoskrnl.exe 执行体和内核 hal.dll HAL win32k.sys windows子系统的内核模式部分 hvix64.exe 虚拟机监控程序 \systemroot\system32\drivers下的.sys文件 核心驱动程序 ntdll.dll 内部支持函数，以及执行体函数的系统服务分发存根 kernel32.dll、user32.dll、gdi32.dll 核心windows子系统dll smss.exe(会话管理器)是系统创建的第一个用户模式进程。
-服务控制管理器（service control manager）是一种由services.exe映像运行的特殊系统进程，负责服务进程的启动、停止和交互。
-第三章 创建进程相关函数：CreateProcess、CreateProcessWithLogonW、CreateProcessWithTokenW 每个windows进程都可以用一种执行体进程结构（EPROCESS）来表示&hellip;每个线程都可以用一个执行体线程结构（ETHREAD）来表示。 EPROCESS及其大部分相关数据结构都位于系统地址空间中，唯一的例外是进程环境块（PEB），它位于进程（用户）地址空间中（因为它包含了由用户模式代码访问的信息）。
-除了Idle进程，每个EPROCESS结构都会被执行体对象管理器封装为进程对象。 执行体进程结构的第一个成员名为进程控制块（ProcessControl Block, PCB）,这是一种KPROCESS类型的结构，专用于内核进程。 kd&gt; dt nt!_eprocess &#43;0x000 Pcb : _KPROCESS ...... &#43;0x0ec DebugPort : Ptr32 Void ...... 由于KPROCESS位于EPROCESS的首位，EPROCESS的地址通常也可以作为KPROCESS的地址用于dt_kprocess中。 第四章" />
+  <meta property="og:description" content="密码学的数学基础 https://www.bilibili.com/video/BV1bY411G7sY 整除性：b整除a (b|a) a=qb 最大公约数，记作 gcd(a,b) 最大公约数只能是0或正整数，不能是负的 ](https://www.bilibili.com/video/BV1x5411R7qP?t=21.9) " />
+  <meta name="description" content="密码学的数学基础 https://www.bilibili.com/video/BV1bY411G7sY 整除性：b整除a (b|a) a=qb 最大公约数，记作 gcd(a,b) 最大公约数只能是0或正整数，不能是负的 ](https://www.bilibili.com/video/BV1x5411R7qP?t=21.9) " />
   <meta property="og:locale" content="cn" /><meta property="og:image" content="" />
   
 
@@ -115,13 +105,13 @@
 
         </div>
         <header class="post-header">
-          <h1 class="post-title">深入解析Windows操作系统</h1>
+          <h1 class="post-title">密码学</h1>
           
           <div class="row post-desc">
             <div class="col-xs-6">
               
-              <time class="post-date" datetime="2024-11-21 10:12:08 UTC">
-                21 Nov 2024
+              <time class="post-date" datetime="2025-01-22 10:12:38 UTC">
+                22 Jan 2025
               </time>
               
             </div>
@@ -134,73 +124,16 @@
 
         <div class="post-content markdown-body">
           
-          <h2 id="第一章">第一章</h2>
-<p>创建服务相关函数：OpenSCManger, QueryServiceStatus, CreateService, StartService, ChangeServiceConfig, ControlService, DeleteService
-窗口句柄、PID、模块名称、COM组件、.NET</p>
-<hr>
-<h2 id="第二章">第二章</h2>
-<p>windows核心组件的文件名</p>
-<table>
-  <thead>
-      <tr>
-          <th>文件名</th>
-          <th>组件</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>ntoskrnl.exe</td>
-          <td>执行体和内核</td>
-      </tr>
-      <tr>
-          <td>hal.dll</td>
-          <td>HAL</td>
-      </tr>
-      <tr>
-          <td>win32k.sys</td>
-          <td>windows子系统的内核模式部分</td>
-      </tr>
-      <tr>
-          <td>hvix64.exe</td>
-          <td>虚拟机监控程序</td>
-      </tr>
-      <tr>
-          <td>\systemroot\system32\drivers下的.sys文件</td>
-          <td>核心驱动程序</td>
-      </tr>
-      <tr>
-          <td>ntdll.dll</td>
-          <td>内部支持函数，以及执行体函数的系统服务分发存根</td>
-      </tr>
-      <tr>
-          <td>kernel32.dll、user32.dll、gdi32.dll</td>
-          <td>核心windows子系统dll</td>
-      </tr>
-  </tbody>
-</table>
-<p>smss.exe(会话管理器)是系统创建的第一个用户模式进程。<br>
-服务控制管理器（service control manager）是一种由services.exe映像运行的特殊系统进程，负责服务进程的启动、停止和交互。</p>
-<hr>
-<h2 id="第三章">第三章</h2>
-<p>创建进程相关函数：CreateProcess、CreateProcessWithLogonW、CreateProcessWithTokenW
-<img src="/images/wi0001.png" alt="">
-<img src="/images/wi0002.png" alt="">
-每个windows进程都可以用一种执行体进程结构（EPROCESS）来表示&hellip;每个线程都可以用一个执行体线程结构（ETHREAD）来表示。
-EPROCESS及其大部分相关数据结构都位于系统地址空间中，唯一的例外是进程环境块（PEB），它位于进程（用户）地址空间中（因为它包含了由用户模式代码访问的信息）。<br>
-除了Idle进程，每个EPROCESS结构都会被执行体对象管理器封装为进程对象。
-<img src="/images/wi0003.png" alt="">
-执行体进程结构的第一个成员名为进程控制块（ProcessControl Block, PCB）,这是一种KPROCESS类型的结构，专用于内核进程。
-<img src="/images/wi0004.png" alt=""></p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>kd&gt; dt nt!_eprocess
-</span></span><span style="display:flex;"><span>   +0x000 Pcb              : _KPROCESS
-</span></span><span style="display:flex;"><span> ......
-</span></span><span style="display:flex;"><span>   +0x0ec DebugPort        : Ptr32 Void
-</span></span><span style="display:flex;"><span> ......
-</span></span></code></pre></div><p>由于KPROCESS位于EPROCESS的首位，EPROCESS的地址通常也可以作为KPROCESS的地址用于dt_kprocess中。
-<img src="/images/wi0005.png" alt=""></p>
-<hr>
-<h2 id="第四章">第四章</h2>
-
+          <h3 id="密码学的数学基础">密码学的数学基础</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>https:<span style="font-style:italic">//www.bilibili.com/video/BV1bY411G7sY
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>整除性<span style="">：</span>b整除a  (b|a)   a=qb
+</span></span></code></pre></div><p><img src="/images/mm0001.png" alt="">
+<img src="/images/mm0002.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"><span style="display:flex;"><span>最大公约数<span style="">，</span>记作 gcd(a,b)
+</span></span><span style="display:flex;"><span>最大公约数只能是0或正整数<span style="">，</span>不能是负的
+</span></span></code></pre></div><p><img src="/images/mm0003.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>](https://www.bilibili.com/video/BV1x5411R7qP?t=21.9)
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2;"><code class="language-js" data-lang="js"></code></pre></div>
         </div>
 
         <div class="row middle-xs">
